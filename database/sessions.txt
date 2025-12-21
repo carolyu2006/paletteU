@@ -1,1 +1,0 @@
-{"_id":"Z92gISIUuRtDL120aJSux6-2jcrwdBP7","session":{"cookie":{"path":"/","_expires":{"$$date":1797831744005},"originalMaxAge":31535999991,"httpOnly":true},"managerAuthenticated":true,"loggedInUser":"carol"},"expiresAt":{"$$date":1797834718783},"createdAt":{"$$date":1764555477957},"updatedAt":{"$$date":1766298718793}}

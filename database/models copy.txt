@@ -1,5 +1,0 @@
-{"name":"FRIENDSHIP","displayName":"Friendship","modelUrl":"/threejs/modelLibrary/friendship.glb","previewUrl":"/threejs/modelLibrary/friendship.png","_id":"3DxvcaQdqqzYrWL8"}
-{"name":"BOOK","displayName":"Book","modelUrl":"/threejs/modelLibrary/book.glb","previewUrl":"/threejs/modelLibrary/book.png","_id":"GK91fV0mrB5erih1"}
-{"name":"FAMILY","displayName":"Family","modelUrl":"/threejs/modelLibrary/family.glb","previewUrl":"/threejs/modelLibrary/family.png","_id":"aZPdtWpxIEON8cea"}
-{"name":"CAT","displayName":"Cat","modelUrl":"/threejs/modelLibrary/cat.glb","previewUrl":"/threejs/modelLibrary/cat.png","_id":"jZIkA58ao9x6x2B8"}
-{"name":"GUITAR","displayName":"Guitar","modelUrl":"/threejs/modelLibrary/guitar.glb","previewUrl":"/threejs/modelLibrary/guitar.png","_id":"wLTLHBoaHBVukLY1"}
