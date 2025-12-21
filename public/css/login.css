@@ -1,0 +1,71 @@
+body {
+    margin-top: 200px;
+}
+
+small {
+    width: 200px;
+}
+
+h1{
+    margin-bottom: 10px;
+    letter-spacing: 26px;
+    font-size: 64px;
+}
+
+ .login-form {
+    display: flex;
+    flex-direction: column;
+    /* use flex-start instead of left for proper flex alignment */
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.login-input-container {
+    margin: 80px 0;
+}
+
+.login-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: left;
+    gap: 20px;
+}
+
+.login-input-item {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+    justify-content: left;
+    /* gap: 20px; */
+}
+
+ .submit-btn {
+    /* make the button only as wide as its content and left-aligned in the flex column */
+    align-self: flex-start;
+    display: inline-flex;
+    padding: 0;
+    border: none;
+    background: none;
+    width: auto;
+}
+
+.image-section {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+    justify-content: left;
+    gap: 15px;
+    position: absolute;
+    bottom: 30px;
+    left: 20px;
+}
+
+.login-image {
+    width: 60px;
+}
+
+ .submit-btn img {
+    display: block;
+}

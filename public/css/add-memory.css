@@ -1,0 +1,454 @@
+/* @import 'styles.css'; */
+
+small {
+    width: 180px;
+}
+
+body {
+    margin-top: 200px;
+}
+
+.main-body {
+    margin: var(--padding-full);
+}
+
+.add-memory-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+    /* height: 100%; */
+}
+
+.add-memory-form {
+    /* flex: 1; */
+    /* max-width: 60%; */
+}
+
+.add-memory-container {
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.memory-preview-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 20px;
+    min-width: 355px;
+}
+
+.memory-preview-container h2 {
+    font-family: 'NicoMoji', sans-serif;
+    font-size: 24px;
+    margin-bottom: 20px;
+    letter-spacing: 8px;
+}
+
+.memory-preview {
+    max-width: 260px;
+    width: 100%;
+}
+
+.memo-item-preview {
+    background-color: var(--color-white);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: left;
+    text-align: left;
+    color: var(--color-black);
+    min-height: 200px;
+}
+
+.memory-preview-circle {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    background-color: var(--color-white);
+}
+
+.bg-red {
+    background-color: var(--color-red) !important;
+    color: var(--color-black);
+}
+
+.bg-yellow {
+    background-color: var(--color-yellow) !important;
+    color: var(--color-black);
+}
+
+.bg-green {
+    background-color: var(--color-green) !important;
+    color: var(--color-black);
+}
+
+.bg-blue {
+    background-color: var(--color-blue) !important;
+    color: var(--color-black);
+}
+
+.bg-purple {
+    background-color: var(--color-purple) !important;
+    color: var(--color-black);
+}
+
+#preview-image-container {
+    margin-bottom: 15px;
+}
+
+#preview-image-container img {
+    width: 100%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.add-memory-item {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+
+.emotion-options {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.emotion-option {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    outline: none;
+    appearance: none;
+    opacity: 0.4;
+    transition: opacity .3s ease;
+    display: inline-block;
+}
+
+.emotion-option:hover {
+    opacity: 1;
+}
+
+/* Style for checked emotion radio button labels */
+input[type="radio"]:checked+.emotion-option {
+    opacity: 1;
+}
+
+.emotion-shape {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+}
+
+.people {
+    height: 60px;
+    object-fit: contain;
+}
+
+#date-year {
+    width: 80px;
+}
+
+#date-month {
+    width: 40px;
+}
+
+#date-day {
+    width: 40px;
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('../assets/icons/toggle.svg');
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 16px;
+    /* padding-right: 10px; */
+    cursor: pointer;
+}
+
+select:focus {
+    outline: none;
+}
+
+select option {
+    background-color: var(--color-black);
+    color: var(--color-white);
+}
+
+.memory-info {
+    display: flex;
+    flex-direction: row;
+    align-items: left;
+    justify-content: left;
+    flex-wrap: wrap;
+}
+
+.island-options {
+    width: 310px;
+}
+
+.memo-input {
+    width: 310px;
+    letter-spacing: 4px;
+    font-size: 14px;
+}
+
+#description-input {
+    resize: none;
+}
+
+#image-input {
+    display: block;
+    width: 100px;
+    height: 130px;
+    border: 2px solid var(--color-gray);
+    border-radius: 4px;
+    background: none;
+    position: relative;
+    cursor: pointer;
+    color: transparent;
+    transition: border .3s ease;
+
+}
+
+.image-preview-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-right: 15px;
+    align-items: flex-start;
+}
+
+.image-preview-item {
+    position: relative;
+    width: 100px;
+    height: 130px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+}
+
+.image-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: -3px;
+    right: -9px;
+    background: rgba(37, 37, 37, 0.8);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    width: 30px;
+    height: 24px;
+    padding: 0;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background 0.3s ease;
+}
+
+.remove-image-btn:hover {
+    background: var(--color-black);
+}
+
+
+#image-input::-webkit-file-upload-button {
+    visibility: hidden;
+}
+
+#image-input::file-selector-button {
+    visibility: hidden;
+}
+
+#image-input::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background-image: url('../assets/icons/add.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    filter: invert(.5);
+    /* Make the icon white */
+    transition: filter .3s ease;
+}
+
+#image-input::file-selector-button {
+    visibility: hidden;
+}
+
+#image-input:hover {
+    /* filter: brightness(0) invert(1);  */
+    border: 2px solid var(--color-white);
+}
+
+#image-input:hover::before {
+    filter: invert(1);
+    /* Make the icon white */
+}
+
+.continue {
+    margin-top: 32px;
+    transition: filter .3s ease;
+    cursor: not-allowed;
+}
+
+.continue.valid {
+    filter: brightness(0) invert(1);
+    cursor: pointer;
+}
+
+.continue.valid:hover img {
+    filter: brightness(0) invert(1);
+    cursor: pointer;
+
+}
+
+.continue.valid:active img {
+    filter: brightness(0) invert(1);
+    /* Makes SVG white */
+}
+
+.continue.valid:focus img {
+    filter: brightness(0) invert(1);
+    /* Makes SVG white */
+}
+
+/* Toggle button styles */
+.toggle-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    outline: none;
+    appearance: none;
+    transition: color .3s ease;
+}
+
+.toggle-button:hover {
+    color: var(--color-white);
+}
+
+/* Style for checked radio button and checkbox labels */
+input[type="radio"]:checked+.toggle-button,
+input[type="checkbox"]:checked+.toggle-button {
+    color: var(--color-white);
+}
+
+@media (max-width: 1200px) {
+    .main-body {
+        margin: var(--padding-480);
+    }
+}
+
+@media (max-width: 980px) {
+
+    .memory-preview-container {
+        min-width: 0px;
+    }
+
+    .memory-preview {
+        display: none;
+    }
+
+    .memory-preview-circle {
+        position: absolute;
+        bottom: 50px;
+        right: 50px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-body {
+        margin: calc(var(--padding-480) / 2);
+    }
+
+    small {
+        width: 160px;
+    }
+}
+
+@media (max-width: 550px) {
+    small {
+        font-size: 12px;
+        width: 150px;
+    }
+
+    input {
+        font-size: 12px;
+    }
+
+    select {
+        font-size: 12px;
+    }
+
+    input[type="text"] {
+        font-size: 12px;
+    }
+
+    input[type="date"] {
+        font-size: 12px;
+    }
+
+    input[type="file"] {
+        font-size: 12px;
+    }
+
+    .toggle-button {
+        font-size: 12px;
+    }
+
+    .emotion-options {
+        gap: 10px;
+    }
+
+    .emotion-shape {
+        width: 40px;
+        /* height: 30px; */
+    }
+
+    .memo-input {
+        width: 280px;
+    }
+
+    .island-options {
+        width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    small {
+        width: 140px;
+    }
+}

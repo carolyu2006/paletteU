@@ -1,0 +1,76 @@
+<html>
+
+<head>
+    <title>PALETTE U</title>
+    <link rel="icon" href="assets/images/logo-transparent.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/emotions.css">
+    <link rel="stylesheet" href="css/train.css">
+    <link rel="stylesheet" href="css/individual-memory.css">
+    <script src="js/script.js"></script>
+    <script src="js/header.js"></script>
+
+</head>
+
+<body>
+    <%- include('components/header-home.ejs') %>
+
+        <section id="emotions-section">
+            <a href="/add-memory?emotion=anger" class="hover-red hover-expand">
+                <h1 class="emotion-title">AN</h1>
+                <img src="assets/images/emotion/shape/red.svg" alt="anger" class="emotion-image">
+                <h1 class="emotion-title"> ER</h1>
+            </a>
+
+            <a href="/add-memory?emotion=joy" class="hover-yellow hover-expand">
+                <h1 class="emotion-title">J</h1>
+                <img src="assets/images/emotion/shape/yellow.svg" alt="anger" class="emotion-image">
+                <h1 class="emotion-title">Y</h1>
+            </a>
+            <a href="/add-memory?emotion=disgust" class="hover-green hover-expand">
+                <h1 class="emotion-title">DIS</h1>
+                <img src="assets/images/emotion/shape/green.svg" alt="anger" class="emotion-image">
+                <h1 class="emotion-title">UST</h1>
+            </a>
+            <a href="/add-memory?emotion=sadness" class="hover-blue hover-expand">
+                <h1 class="emotion-title">SAD</h1>
+                <img src="assets/images/emotion/shape/blue.svg" alt="anger" class="emotion-image">
+                <h1 class="emotion-title">ESS</h1>
+            </a>
+            <a href="/add-memory?emotion=fear" class="hover-purple hover-expand">
+                <h1 class="emotion-title">FE</h1>
+                <img src="assets/images/emotion/shape/purple.svg" alt="anger" class="emotion-image">
+                <h1 class="emotion-title">AR</h1>
+            </a>
+        </section>
+
+        <div id="train-container" class="train-container">
+            <div class="train-wrapper">
+                <img src="assets/images/home/train.svg" alt="train" class="train-image">
+                <svg width="811" height="232" viewBox="0 0 811 232" class="train-circles-overlay"
+                    preserveAspectRatio="xMidYMid meet">
+                </svg>
+                <% trainMemory.forEach((m, i)=> { %>
+                    <button onclick="openMemory(this)" data-memory-id="<%= m._id %>"
+                        data-memory-emotion="<%= m.emotion %>" data-memory-title="<%= m.title || '' %>"
+                        data-memory-date="<%= m.date || '' %>" data-memory-description="<%= m.description || '' %>"
+                        data-memory-imgsrc="<%= Array.isArray(m.imgSrc) ? m.imgSrc[0] : (m.imgSrc || '') %>"
+                        data-memory-island="<%= Array.isArray(m.island) ? m.island.join(',') : '' %>"
+                        class="train-circle circle<%= i %> bg-<%= m.emotion %>">
+                    </button>
+                    <% }); %>
+            </div>
+        </div>
+
+        <div id="train-memory-container" class="train-memory-container">
+            <div id="train-memory-display" class="train-memory-display">
+                <button class="close-train-memory-btn" onclick="closeTrainMemory()">×</button>
+                <div id="train-memory-content" class="train-memory-content">
+                    <!-- Memory content will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+</body>
+
+</html>

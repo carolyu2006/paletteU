@@ -1,0 +1,32 @@
+<!-- <header style="background-color: transparent;" class="header-home"> -->
+<div class="header-container-top">
+    <div class="island-button-wrapper" id="island-button-wrapper">
+        <button onclick="window.location.href='/island'" class="menu-button" id="island-button">
+            <img src="assets/icons/paletteIcon.svg" alt="back" class="menu">
+        </button>
+        <button class="menu-button add-island-button" id="add-island-button" style="display: none;">
+            <img src="assets/icons/indexAddIsland.svg" alt="add" class="menu">
+        </button>
+    </div>
+    <button class="menu-button" onclick="toggleMenu()">
+        <img src="assets/icons/profileIcon.svg" alt="menu" class="menu">
+    </button>
+</div>
+<div class=" header-container-bottom">
+    <div class="train-button-wrapper">
+        <button 
+            id="train-button" 
+            class="menu-button <%= trainUnlocked ? '' : 'train-button-locked' %>" 
+            onclick="<%= trainUnlocked ? 'toggleTrain()' : '' %>"
+            <%= trainUnlocked ? '' : 'disabled' %>>
+            <img src="assets/icons/trainIcon.svg" alt="train" class="menu">
+        </button>
+        <% if (!trainUnlocked) { %>
+            <span class="train-lock-tooltip">Add 6+ memories to unlock</span>
+        <% } %>
+    </div>
+    <button onclick="window.location.href='/all-memory'" class="menu-button">
+        <img src="assets/icons/galleryIcon.svg" alt="menu" class="menu">
+    </button>
+</div>
+<!-- </header> -->

@@ -1,0 +1,2 @@
+{"username":"carol","fullname":"carol","password":"$2b$10$QBdmyE0qqVqZCKHsJiqG2eFYdyrqJXtf6l8.2RS.Kh3qMV.z1uCru","_id":"ZMcbWQ8uI9awHtU5"}
+{"username":"carol2","fullname":"carol2","password":"$2b$10$2yWe2pnsnDbcUA/i8DorVOKzBsY1rdxEHYGvkXPuV4GQm9.hUu7Qq","_id":"f8QZAFWDUYjAUlL0"}

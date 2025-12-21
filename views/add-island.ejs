@@ -1,0 +1,215 @@
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title>PALETTE U</title>
+    <link rel="icon" href="assets/images/logo-transparent.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/add-island.css">
+    <link rel="stylesheet" href="css/individual-memory.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="js/script.js"></script>
+    <script src="js/add-island.js"></script>
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/",
+            "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.13.0/index.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <%- include('components/header.ejs') %>
+
+        <div class="main-body">
+            <div class="add-island-wrapper">
+                <form action="/add-island" method="post" enctype="multipart/form-data" class="add-island-form">
+                    <h1>ADD ISLAND</h1>
+                    <div class="add-island-container">
+                        <div class="add-island-item">
+                            <small>NAME</small>
+                            <div class="memory-info">
+                                <input type="text" placeholder="XXX ISLAND NAME XXX" id="name-input" name="name"
+                                    class="island-input" style="text-transform: uppercase;">
+                            </div>
+                        </div>
+                        <div class="add-island-item">
+                            <small>MODEL</small>
+                            <div class="memory-info">
+                                <input type="text" placeholder="" id="model-input" name="model" class="island-input"
+                                    readonly>
+                                <div class="model-selector-display">
+                                    <div id="selected-model-display" class="selected-model-display">
+
+                                    </div>
+                                    <button type="button" id="select-model-btn" class="select-btn">
+                                        SELECT MODEL
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="add-island-item">
+                            <small>MEMORIES</small>
+                            <div class="memory-info">
+                                <div id="selected-memories-display" class="selected-memories-display">
+                                </div>
+                                <button type="button" id="select-memories-btn" class="select-btn">
+                                    SELECT MEMORIES
+                                </button>
+                                <div id="selected-memories-inputs"></div>
+                            </div>
+                        </div>
+                        <div class="add-island-item">
+                            <small>COLOR</small>
+                            <div class="memory-info">
+                                <div class="color-selection">
+                                    <button type="button" class="color-btn" data-color="1" aria-label="Color option 1">
+                                        <img src="threejs/mat/1.png" alt="color 1" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="2" aria-label="Color option 2">
+                                        <img src="threejs/mat/2.png" alt="color 2" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="3" aria-label="Color option 3">
+                                        <img src="threejs/mat/3.png" alt="color 3" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="4" aria-label="Color option 4">
+                                        <img src="threejs/mat/4.png" alt="color 4" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="5" aria-label="Color option 5">
+                                        <img src="threejs/mat/5.png" alt="color 5" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="6" aria-label="Color option 6">
+                                        <img src="threejs/mat/6.png" alt="color 6" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="7" aria-label="Color option 7">
+                                        <img src="threejs/mat/7.png" alt="color 7" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="8" aria-label="Color option 8">
+                                        <img src="threejs/mat/8.png" alt="color 8" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="9" aria-label="Color option 9">
+                                        <img src="threejs/mat/9.png" alt="color 9" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="10"
+                                        aria-label="Color option 10">
+                                        <img src="threejs/mat/10.png" alt="color 10" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="11"
+                                        aria-label="Color option 11">
+                                        <img src="threejs/mat/11.png" alt="color 11" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="12"
+                                        aria-label="Color option 12">
+                                        <img src="threejs/mat/12.png" alt="color 12" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="13"
+                                        aria-label="Color option 13">
+                                        <img src="threejs/mat/13.png" alt="color 13" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="14"
+                                        aria-label="Color option 14">
+                                        <img src="threejs/mat/14.png" alt="color 14" class="color-icon">
+                                    </button>
+                                    <button type="button" class="color-btn" data-color="15"
+                                        aria-label="Color option 15">
+                                        <img src="threejs/mat/15.png" alt="color 15" class="color-icon">
+                                    </button>
+                                </div>
+                                <input type="hidden" id="color-input" name="color" value="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="continue">
+                        <img src="assets/icons/continue.svg" alt="continue" class="continue">
+                    </button>
+                </form>
+
+                <div class="island-preview-container">
+                    <div id="threejs-preview-container" class="threejs-preview-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Memory Selection -->
+        <div id="memory-modal" class="memory-modal">
+            <div class="memory-modal-content">
+                <div class="memory-modal-header">
+                    <h1>SELECT MEMORIES</h1>
+                    <button type="button" id="close-modal-btn" class="close-modal-btn">×</button>
+                </div>
+                <div class="memory-modal-body">
+                    <div class="all-memo-container-modal">
+                        <% if (memories && memories.length> 0) { %>
+                            <% memories.forEach((memory, index)=> { %>
+                                <label class="memory-modal-item-label">
+                                    <input type="checkbox" class="memory-modal-checkbox"
+                                        data-memory-id="<%= memory._id || index %>"
+                                        data-memory-emotion="<%= memory.emotion || '' %>">
+                                    <div class="memo-item-modal <%= 'bg-' + (memory.emotion || '') %>">
+                                        <% if (memory.imgSrc && memory.imgSrc.length> 0) { %>
+                                            <img src="<%= Array.isArray(memory.imgSrc) ? memory.imgSrc[0] : memory.imgSrc %>"
+                                                alt="image" class="memo-image">
+                                            <% } %>
+                                                <p class="memo-date">
+                                                    <%= memory.date || '' %>
+                                                </p>
+                                                <p class="memo-title">
+                                                    <%= memory.title || 'Untitled' %>
+                                                </p>
+                                                <p class="memo-description">
+                                                    <%= memory.description || '' %>
+                                                </p>
+                                    </div>
+                                </label>
+                                <% }); %>
+                                    <% } else { %>
+                                        <p class="no-memories">No memories available. Create some memories first!</p>
+                                        <% } %>
+                    </div>
+                </div>
+                <div class="memory-modal-footer">
+                    <button type="button" id="confirm-memories-btn" class="confirm-memories-btn">
+                        CONFIRM
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Selection -->
+        <div id="model-modal" class="model-modal">
+            <div class="model-modal-content">
+                <div class="model-modal-header">
+                    <h1>SELECT MODEL</h1>
+                    <button type="button" id="close-model-modal-btn" class="close-modal-btn">×</button>
+                </div>
+                <div class="model-modal-body">
+                    <div class="all-models-container">
+                        <% models.forEach(model=> { %>
+                            <div class="model-item" data-model-name="<%= model.name %>"
+                                data-model-display-name="<%= model.displayName || model.name %>"
+                                data-model-url="<%= model.modelUrl || '' %>"
+                                data-model-preview-url="<%= model.previewUrl || '' %>">
+                                <img src="<%= model.previewUrl %>" alt="<%= model.displayName || model.name %>"
+                                    class="model-preview-image">
+                                <!-- <p class="model-name">
+                                    <%= model.displayName || model.name %>
+                                </p> -->
+                            </div>
+                            <% }); %>
+                    </div>
+                </div>
+                <div class="model-modal-footer">
+                    <button type="button" id="confirm-model-btn" class="confirm-model-btn">
+                        CONFIRM
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script type="module" src="js/threejs/add-island.js"></script>
+</body>
+
+</html>

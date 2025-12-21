@@ -1,0 +1,92 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>PALETTE U - Model Manager</title>
+    <link rel="icon" href="/assets/images/logo-transparent.png">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/manager.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+    <%- include('components/header.ejs') %>
+    
+    <div class="main-body">
+        <div class="manager-container">
+            <div class="manager-header">
+                <h1>MODEL MANAGER</h1>
+                <a href="/manager/logout" class="logout-btn">LOGOUT</a>
+            </div>
+
+            <% if (typeof error !== 'undefined' && error) { %>
+                <div class="alert alert-error"><%= error %></div>
+            <% } %>
+            <% if (typeof success !== 'undefined' && success) { %>
+                <div class="alert alert-success"><%= success %></div>
+            <% } %>
+
+            <div class="manager-content">
+                <div class="add-model-section">
+                    <h2>ADD NEW MODEL</h2>
+                    <form action="/manager/add-model" method="post" class="add-model-form">
+                        <div class="form-group">
+                            <label for="name">Name (uppercase, no spaces)</label>
+                            <input type="text" id="name" name="name" required 
+                                   placeholder="e.g., FAMILY" 
+                                   pattern="[A-Z0-9_]+" 
+                                   class="form-input"
+                                   oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9_]/g, '')">
+                        </div>
+                        <div class="form-group">
+                            <label for="displayName">Display Name</label>
+                            <input type="text" id="displayName" name="displayName" required 
+                                   placeholder="e.g., Family" 
+                                   class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="modelUrl">Model URL</label>
+                            <input type="text" id="modelUrl" name="modelUrl" required 
+                                   placeholder="e.g., /threejs/modelLibrary/family.glb" 
+                                   class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="previewUrl">Preview Image URL</label>
+                            <input type="text" id="previewUrl" name="previewUrl" required 
+                                   placeholder="e.g., /threejs/modelLibrary/family.png" 
+                                   class="form-input">
+                        </div>
+                        <button type="submit" class="submit-btn">ADD MODEL</button>
+                    </form>
+                </div>
+
+                <div class="models-list-section">
+                    <h2>EXISTING MODELS (<%= models.length %>)</h2>
+                    <div class="models-grid">
+                        <% models.forEach(model => { %>
+                            <div class="model-card">
+                                <div class="model-preview">
+                                    <img src="<%= model.previewUrl %>" alt="<%= model.displayName %>" 
+                                         onerror="this.style.display='none'">
+                                </div>
+                                <div class="model-info">
+                                    <h3><%= model.displayName %></h3>
+                                    <p class="model-name-code"><%= model.name %></p>
+                                    <p class="model-url"><%= model.modelUrl %></p>
+                                    <form action="/manager/delete-model" method="post" 
+                                          onsubmit="return confirm('Are you sure you want to delete this model?');">
+                                        <input type="hidden" name="modelId" value="<%= model._id %>">
+                                        <button type="submit" class="delete-btn">DELETE</button>
+                                    </form>
+                                </div>
+                            </div>
+                        <% }); %>
+                        <% if (models.length === 0) { %>
+                            <p class="no-models">No models in database</p>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

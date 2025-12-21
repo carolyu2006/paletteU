@@ -1,0 +1,37 @@
+body {
+    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+}
+
+section {
+    
+}
+
+a{
+    color: var(--color-white);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 64px;
+    margin-top: 36px;
+}
+
+.emotion-title {
+    font-size: 47px;
+    margin-bottom: 16px;
+    letter-spacing: 64px;
+    margin-right: -64px;
+    transition: all 0.8s ease;
+}
+
+.emotion-image {
+    width: 80px;
+    /* margin-right: 2vh; */
+}

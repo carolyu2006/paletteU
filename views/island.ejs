@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PALETTE U</title>
+  <link rel="icon" href="assets/images/logo-transparent.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/island.css">
+  <script src="js/script.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/",
+        "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.13.0/index.js"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <%- include('components/header.ejs') %>
+
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-percentage" id="loading-percentage">0%</div>
+      <div class="loading-text">LOADING</div>
+    </div>
+  </div>
+  <div id="app"></div>
+  <script>
+    window.userIslands = <%- JSON.stringify(islands || []) %>;
+  </script>
+  <script type="module" src="js/threejs/main.js"></script>
+</body>
+
+</html>

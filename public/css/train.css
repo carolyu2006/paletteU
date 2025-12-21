@@ -1,0 +1,198 @@
+/* Train Button Styles */
+.train-button-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.train-button-locked {
+    opacity: 0.3;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.train-button-locked:hover {
+    opacity: 0.4;
+}
+
+.train-lock-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 8px 12px;
+    background-color: var(--color-gray);
+    color: var(--color-white);
+    font-size: 12px;
+    letter-spacing: 2px;
+    white-space: nowrap;
+    border-radius: 4px;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.train-button-wrapper:hover .train-lock-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Train Animation Styles */
+.train-container {
+    position: fixed;
+    top: 70%;
+    left: -50%;
+    transform: translate(-50%, -50%);
+    z-index: 95;
+    transition: left 2s ease-in-out;
+    pointer-events: none;
+}
+
+.train-container.active {
+    left: 50%;
+    pointer-events: auto;
+}
+
+.train-container.exiting {
+    left: 150%;
+    pointer-events: none;
+}
+
+.train-container.back-to-left {
+    transition: left 0s ease-in-out;
+    left: -150%
+}
+
+.train-wrapper {
+    position: relative;
+    width: 811px;
+    height: 232px;
+}
+
+.train-image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+.train-circle {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 100px;
+    background-color: #B9D580;
+    z-index: 100;
+    cursor: pointer;
+}
+
+.circle0 {
+    bottom: 64px;
+    left: 330px;
+}
+
+.circle1 {
+    bottom: 64px;
+    left: 380px;
+}
+
+.circle2 {
+    bottom: 64px;
+    left: 430px;
+}
+
+.circle3 {
+    bottom: 107px;
+    left: 355px;
+}
+
+.circle4 {
+    bottom: 107px;
+    left: 405px;
+}
+
+.circle5 {
+    bottom: 150px;
+    left: 380px;
+}
+
+/* Emotions Section Styles */
+#emotions-section {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 90;
+    transition: left 2s ease-in-out;
+    pointer-events: auto;
+}
+
+#emotions-section.emotion-exit {
+    left: 150%;
+    pointer-events: none;
+}
+
+#emotions-section.emotion-back-to-left {
+    transition: left 0s ease-in-out;
+    left: -100%;
+    pointer-events: none;
+}
+
+#emotions-section.emotion-enter {
+    left: 50%;
+    pointer-events: auto;
+    transition: left 2s ease-in-out;
+}
+
+/* Train Memory Display Styles */
+.train-memory-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.train-memory-display {
+    position: relative;
+    width: 300px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close-train-memory-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--color-black);
+    font-size: 40px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+    z-index: 2001;
+}
+
+.close-train-memory-btn:hover {
+    color: var(--color-gray);
+}
+
+.train-memory-content {
+    width: 100%;
+}
+

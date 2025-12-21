@@ -1,0 +1,29 @@
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>PALETTE U - Manager Login</title>
+    <link rel="icon" href="/assets/images/logo-transparent.png">
+    <link rel="stylesheet" href="/css/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+    <%- include('components/header.ejs') %>
+    
+    <div class="main-body">
+        <div class="manager-login-container">
+            <h1>MANAGER LOGIN</h1>
+            <% if (error) { %>
+                <p style="color: var(--color-red); margin-bottom: 20px;"><%= error %></p>
+            <% } %>
+            <form action="/manager/login" method="post" class="manager-login-form">
+                <div class="form-group">
+                    <!-- <label for="password">Password</label> -->
+                    <input type="password" id="password" name="password" placeholder="Enter password" required class="form-input">
+                </div>
+                <button type="submit" class="submit-btn">LOGIN</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+

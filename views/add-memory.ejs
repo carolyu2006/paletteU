@@ -1,0 +1,128 @@
+<html>
+
+<head>
+    <title>PALETTE U</title>
+    <link rel="icon" href="assets/images/logo-transparent.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/add-memory.css">
+    <link rel="stylesheet" href="css/individual-memory.css">
+    <script src="js/add-memory.js"></script>
+    <script src="js/script.js"></script>
+</head>
+
+<body>
+    <%- include('components/header.ejs') %>
+
+        <div class="main-body">
+            <!-- <h2>#0003</h2> -->
+            <div class="add-memory-wrapper">
+                <form action="/add-memory" method="post" enctype="multipart/form-data" class="add-memory-form">
+                    <h1>ADD MEMORY</h1>
+                    <div class="add-memory-container">
+                        <div class="add-memory-item">
+                            <small>EMOTION</small>
+                            <div class="emotion-options memory-info">
+
+                                <input type="radio" id="red" name="emotion" value="red" style="display: none;">
+                                <label for="red" class="emotion-option">
+                                    <img src="assets/images/emotion/shape/red.svg" alt="emotion" class="emotion-shape">
+                                </label>
+                                <input type="radio" id="yellow" name="emotion" value="yellow" style="display: none;">
+                                <label for="yellow" class="emotion-option">
+                                    <img src="assets/images/emotion/shape/yellow.svg" alt="emotion"
+                                        class="emotion-shape">
+                                </label>
+                                <input type="radio" id="green" name="emotion" value="green" style="display: none;">
+                                <label for="green" class="emotion-option">
+                                    <img src="assets/images/emotion/shape/green.svg" alt="emotion"
+                                        class="emotion-shape">
+                                </label>
+                                <input type="radio" id="blue" name="emotion" value="blue" style="display: none;">
+                                <label for="blue" class="emotion-option">
+                                    <img src="assets/images/emotion/shape/blue.svg" alt="emotion" class="emotion-shape">
+                                </label>
+                                <input type="radio" id="purple" name="emotion" value="purple" style="display: none;">
+                                <label for="purple" class="emotion-option">
+                                    <img src="assets/images/emotion/shape/purple.svg" alt="emotion"
+                                        class="emotion-shape">
+                                </label>
+                            </div>
+                        </div>
+                        <div class="add-memory-item">
+                            <small>DATE</small>
+                            <div class="memory-info">
+                                <input type="text" placeholder="2006" id="date-year" name="date-year">
+                                <span>/</span>
+                                <input type="text" placeholder="07" id="date-month" name="date-month">
+                                <span>/</span>
+                                <input type="text" placeholder="26" id="date-day" name="date-day">
+                            </div>
+                        </div>
+
+                        <!-- <div class="add-memory-item">
+                        <small>PEOPLE</small>
+                        <div class="memory-info">
+                            <button>
+                                <img src="assets/images/user/emily.png" alt="people" class="people">
+                            </button>
+                            <button>
+                                <img src="assets/icons/add-people.svg" people" class="people">
+                            </button>
+                        </div>
+                    </div> -->
+                        <div class="add-memory-item">
+                            <small>TITLE</small>
+                            <div class="memory-info">
+                                <input type="text" placeholder="XXX ENTER TITLE XXX" id="title-input" name="title"
+                                    class="memo-input">
+                            </div>
+                        </div>
+                        <div class="add-memory-item">
+                            <small>CONTENT</small>
+                            <div class="memory-info">
+                                <textarea type="text" placeholder="XXX ENTER DESCRIPTION XXX" id="description-input"
+                                    name="description" class="memo-input"></textarea>
+                            </div>
+                        </div>
+                        <div class="add-memory-item">
+                            <small>IMAGE</small>
+                            <div class="memory-info">
+                                <div class="image-preview-container" id="image-preview-container"></div>
+                                <input type="file" id="image-input" name="image-input" multiple accept="image/*">
+                            </div>
+                        </div>
+                        <div class="add-memory-item">
+                            <small>ISLAND</small>
+                            <div class="memory-info island-options">
+                                <% for (let island of islands) { %>
+                                    <input type="checkbox" id="<%= island.name %>" name="island" value="<%= island.name %>" style="display: none;">
+                                    <label for="<%= island.name %>" class="toggle-button"><%= island.name %></label>
+                                    <span>/</span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="continue">
+                        <img src="assets/icons/continue.svg" alt="continue" class="continue">
+                    </button>
+                </form>
+
+                <div class="memory-preview-container">
+                    <div class="memory-preview">
+                        <div class="memo-item-preview" id="memo-preview">
+                            <div id="preview-image-container"></div>
+                            <p class="memo-date" id="preview-date"></p>
+                            <p class="memo-title" id="preview-title"></p>
+                            <p class="memo-description" id="preview-description"></p>
+                            <p class="memo-island" id="preview-island"></p>
+                        </div>
+                    </div>
+                    <div class="memory-preview-circle" id="memory-preview-circle">
+                    </div>
+                </div>
+            </div>
+
+</body>
+
+</html>

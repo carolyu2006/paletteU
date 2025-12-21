@@ -1,0 +1,69 @@
+
+.memo-item {
+    width: 260px;
+    /* width: 100%; */
+    background-color: var(--color-white);
+    padding: 15px;
+    /* padding-bottom: 30px; */
+    margin-bottom: 20px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+
+    display: flex;
+    flex-direction: column;
+    align-items: left;
+    justify-content: left;
+    text-align: left;
+    color: var(--color-black);
+}
+
+.memo-image {
+    width: 100%; 
+    margin-bottom: 15px;
+}
+
+.memo-title {
+    font-size: 21px;    
+    color: var(--color-black);
+    letter-spacing: 4px;
+    /* margin-bottom: 10px; */
+}
+
+.memo-description {
+    font-size: 14px;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    color: var(--color-black);
+
+}
+
+.memo-date {
+    font-size: 12px;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    color: var(--color-black);
+
+}
+
+.memo-location {
+    font-size: 12px;
+    color: var(--color-black);
+
+}
+
+.memo-island-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.memo-island {
+    font-size: 12px;
+    color: var(--color-black);
+    display: inline-block;
+    margin-right: 5px;
+    letter-spacing: 2px;
+}
