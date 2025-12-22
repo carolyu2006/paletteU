@@ -65,7 +65,7 @@ function initIslandButtonHover() {
                 updateButtonVisibility();
             }
             hideTimeout = null;
-        }, 100);
+        }, 500);
     });
 
     // Navigate to add-island page on click

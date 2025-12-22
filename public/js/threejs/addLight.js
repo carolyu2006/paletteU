@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 export const lightYellow = (scene) => {
-	const light = new THREE.PointLight(0xFFBF99, 300)
+	const light = new THREE.PointLight(0xFFBF99, 400)
 	light.position.set(16, 20, 3)
 	light.rotation.set(THREE.MathUtils.degToRad(250), THREE.MathUtils.degToRad(0), THREE.MathUtils.degToRad(0))
 
@@ -11,7 +11,7 @@ export const lightYellow = (scene) => {
 }
 
 export const lightRed = (scene) => {
-	const light = new THREE.PointLight(0xFF9E8A, 400)
+	const light = new THREE.PointLight(0xFF9E8A, 500)
 	light.position.set(-10, 20, 10)
 
 	scene.add(light)

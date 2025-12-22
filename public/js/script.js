@@ -8,21 +8,50 @@ function toggleMenu() {
         menu = document.createElement('div');
         menu.id = 'dropdown-menu';
         menu.className = 'dropdown-menu';
+        // menu.innerHTML = `
+        // <div class="dropdown-menu-content">
+        //     <div class="dropdown-menu-content-top">
+        //         <button class="dropdown-menu-content-item">
+        //             <img src="assets/icons/dropdown/profile.svg" alt="menu" class="menu">
+        //             <p>Profile</p>
+        //         </button>
+        //         <button class="dropdown-menu-content-item">
+        //             <img src="assets/icons/dropdown/upgrade.svg" alt="menu" class="menu">
+        //             <p>Upgrade Plan</p>
+        //             </button>
+        //         <button class="dropdown-menu-content-item">
+        //             <img src="assets/icons/dropdown/order.svg" alt="menu" class="menu">
+        //             <p>Order</p>
+        //         </button>
+        //         <button class="dropdown-menu-content-item">
+        //             <img src="assets/icons/dropdown/islands.svg" alt="menu" class="menu">
+        //             <p>Islands</p>
+        //         </button>
+        //         <button class="dropdown-menu-content-item">
+        //             <img src="assets/icons/dropdown/setting.svg" alt="menu" class="menu">
+        //             <p>Setting</p>
+        //         </button>
+        //     </div>
+        //     <div class="dropdown-menu-content-bottom">
+        //         <button class="dropdown-menu-content-item">
+        //             <img src="assets/icons/dropdown/help.svg" alt="menu" class="menu">
+        //             <p>Help</p>
+        //         </button>
+        //         <button class="dropdown-menu-content-item" onclick="window.location.href='/explore'">
+        //             <img src="assets/icons/dropdown/explore.svg" alt="menu" class="menu">
+        //             <p>Explore More</p>
+        //         </button>
+        //         <button onclick="window.location.href='/logout'" class="dropdown-menu-content-item">
+        //             <img src="assets/icons/dropdown/logout.svg" alt="menu" class="menu">
+        //             <p>Logout</p>
+        //         </button>
+        //     </div>
+        // </div>
+        // `;
+        
         menu.innerHTML = `
         <div class="dropdown-menu-content">
             <div class="dropdown-menu-content-top">
-                <button class="dropdown-menu-content-item">
-                    <img src="assets/icons/dropdown/profile.svg" alt="menu" class="menu">
-                    <p>Profile</p>
-                </button>
-                <button class="dropdown-menu-content-item">
-                    <img src="assets/icons/dropdown/upgrade.svg" alt="menu" class="menu">
-                    <p>Upgrade Plan</p>
-                    </button>
-                <button class="dropdown-menu-content-item">
-                    <img src="assets/icons/dropdown/order.svg" alt="menu" class="menu">
-                    <p>Order</p>
-                </button>
                 <button class="dropdown-menu-content-item">
                     <img src="assets/icons/dropdown/islands.svg" alt="menu" class="menu">
                     <p>Islands</p>

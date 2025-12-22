@@ -1,3 +1,14 @@
 .env
 README.md
 node_modules
+database/
+public/uploads/
+database/islands.txt
+database/memories.txt
+database/sessions.txt
+database/islands.txt
+database/memories.txt
+database/sessions.txt
+database/islands.txt
+database/memories.txt
+database/sessions.txt
