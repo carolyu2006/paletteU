@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PALETTE U - Settings</title>
+  <link rel="icon" href="/assets/images/logo-transparent.png">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/settings.css">
+  <script src="/js/script.js"></script>
+</head>
+
+<body>
+  <%- include('components/header.ejs') %>
+
+  <div class="main-body">
+    <h1>SETTINGS</h1>
+
+    <div class="settings-container">
+      <!-- Profile -->
+      <div class="settings-section">
+        <h2>PROFILE</h2>
+        <div class="profile-content">
+          <div class="setting-item">
+            <label>USERNAME</label>
+            <div class="setting-content">
+              <div class="setting-value"><%= user ? user.username : '' %></div>
+            </div>
+          </div>
+          <div class="setting-item">
+            <label>PASSWORD</label>
+            <div class="setting-content">
+              <div class="setting-value">********</div>
+              <button type="button" class="settings-link change-password-btn" onclick="openPasswordModal()">CHANGE PASSWORD</button>
+            </div>
+          </div>
+          <div class="setting-item">
+            <label>ISLANDS</label>
+            <div class="setting-content">
+              <div class="island-progress-container">
+                <!-- <div class="island-progress-info">
+                  <span class="island-count"><%= typeof islandCount !== 'undefined' ? islandCount : 0 %></span>
+                  <span class="island-separator">/</span>
+                  <span class="island-max"><%= typeof maxIslands !== 'undefined' ? maxIslands : 20 %></span>
+                </div> -->
+                <div class="progress-bar">
+                  <%
+                    const currentIslandCount = typeof islandCount !== 'undefined' ? islandCount : 0;
+                    const maxIslandCount = typeof maxIslands !== 'undefined' ? maxIslands : 20;
+                    const islandProgressPercent = maxIslandCount > 0 ? Math.min((currentIslandCount / maxIslandCount) * 100, 100) : 0;
+                  %>
+                  <div class="progress-fill" style="width: <%= islandProgressPercent %>%"></div>
+                </div>
+              </div>
+              <a href="/all-islands" class="settings-edit-link">EDIT ISLANDS</a>
+            </div>
+          </div>
+          <div class="setting-item">
+            <label>MEMORIES</label>
+            <div class="setting-content">
+              <div class="memory-progress-container">
+                <!-- <div class="memory-progress-info">
+                  <span class="memory-count"><%= typeof memoryCount !== 'undefined' ? memoryCount : 0 %></span>
+                  <span class="memory-separator">/</span>
+                  <span class="memory-max"><%= typeof maxMemories !== 'undefined' ? maxMemories : 500 %></span>
+                </div> -->
+                <div class="progress-bar">
+                  <%
+                    const currentMemoryCount = typeof memoryCount !== 'undefined' ? memoryCount : 0;
+                    const maxMemoryCount = typeof maxMemories !== 'undefined' ? maxMemories : 500;
+                    const memoryProgressPercent = maxMemoryCount > 0 ? Math.min((currentMemoryCount / maxMemoryCount) * 100, 100) : 0;
+                  %>
+                  <div class="progress-fill" style="width: <%= memoryProgressPercent %>%"></div>
+                </div>
+              </div>
+              <a href="/all-memory" class="settings-edit-link">EDIT MEMORIES</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Change Password Modal -->
+      <div id="passwordModal" class="password-modal" style="display: none;">
+        <div class="password-modal-content">
+          <div class="password-modal-header">
+            <h2>CHANGE PASSWORD</h2>
+            <button type="button" class="close-modal-btn" onclick="closePasswordModal()">×</button>
+          </div>
+          <form action="/settings/change-password" method="post" class="settings-form" id="passwordForm">
+            <div class="form-group">
+              <label for="currentPassword">CURRENT PASSWORD</label>
+              <input type="password" id="currentPassword" name="currentPassword" required class="form-input" 
+                     placeholder="Enter current password">
+            </div>
+            <div class="form-group">
+              <label for="newPassword">NEW PASSWORD</label>
+              <input type="password" id="newPassword" name="newPassword" required class="form-input" 
+                     placeholder="Enter new password">
+            </div>
+            <div class="form-group">
+              <label for="confirmPassword">CONFIRM PASSWORD</label>
+              <input type="password" id="confirmPassword" name="confirmPassword" required class="form-input" 
+                     placeholder="Confirm new password">
+            </div>
+            <button type="submit" class="submit-btn">SAVE PASSWORD</button>
+            <% if (typeof passwordError !== 'undefined' && passwordError) { %>
+              <p class="error-message"><%= passwordError %></p>
+            <% } %>
+            <% if (typeof passwordSuccess !== 'undefined' && passwordSuccess) { %>
+              <p class="success-message"><%= passwordSuccess %></p>
+            <% } %>
+          </form>
+        </div>
+      </div>
+
+      <!-- Change Words -->
+      <div class="settings-section">
+        <h2>CHANGE WORDS</h2>
+        <div class="emotion-words-grid">
+          <% 
+            const redWord = user && user.emotionWords && user.emotionWords.red ? user.emotionWords.red : 'ANGER';
+            const yellowWord = user && user.emotionWords && user.emotionWords.yellow ? user.emotionWords.yellow : 'JOY';
+            const greenWord = user && user.emotionWords && user.emotionWords.green ? user.emotionWords.green : 'DISGUST';
+            const blueWord = user && user.emotionWords && user.emotionWords.blue ? user.emotionWords.blue : 'SADNESS';
+            const purpleWord = user && user.emotionWords && user.emotionWords.purple ? user.emotionWords.purple : 'FEAR';
+          %>
+          <div class="emotion-word-item" data-emotion="red" data-word="<%= redWord %>">
+            <img src="/assets/images/emotion/shape/red.svg" alt="red" class="emotion-shape-icon">
+            <p class="emotion-word-text"><%= redWord %></p>
+          </div>
+          <div class="emotion-word-item" data-emotion="yellow" data-word="<%= yellowWord %>">
+            <img src="/assets/images/emotion/shape/yellow.svg" alt="yellow" class="emotion-shape-icon">
+            <p class="emotion-word-text"><%= yellowWord %></p>
+          </div>
+          <div class="emotion-word-item" data-emotion="green" data-word="<%= greenWord %>">
+            <img src="/assets/images/emotion/shape/green.svg" alt="green" class="emotion-shape-icon">
+            <p class="emotion-word-text"><%= greenWord %></p>
+          </div>
+          <div class="emotion-word-item" data-emotion="blue" data-word="<%= blueWord %>">
+            <img src="/assets/images/emotion/shape/blue.svg" alt="blue" class="emotion-shape-icon">
+            <p class="emotion-word-text"><%= blueWord %></p>
+          </div>
+          <div class="emotion-word-item" data-emotion="purple" data-word="<%= purpleWord %>">
+            <img src="/assets/images/emotion/shape/purple.svg" alt="purple" class="emotion-shape-icon">
+            <p class="emotion-word-text"><%= purpleWord %></p>
+          </div>
+        </div>
+        
+        <!-- Hidden form for submitting all words -->
+        <form action="/settings/change-words" method="post" class="settings-form" id="wordsForm" style="display: none;">
+          <input type="hidden" id="wordRed" name="wordRed" value="<%= user && user.emotionWords && user.emotionWords.red ? user.emotionWords.red : 'ANGER' %>">
+          <input type="hidden" id="wordYellow" name="wordYellow" value="<%= user && user.emotionWords && user.emotionWords.yellow ? user.emotionWords.yellow : 'JOY' %>">
+          <input type="hidden" id="wordGreen" name="wordGreen" value="<%= user && user.emotionWords && user.emotionWords.green ? user.emotionWords.green : 'DISGUST' %>">
+          <input type="hidden" id="wordBlue" name="wordBlue" value="<%= user && user.emotionWords && user.emotionWords.blue ? user.emotionWords.blue : 'SADNESS' %>">
+          <input type="hidden" id="wordPurple" name="wordPurple" value="<%= user && user.emotionWords && user.emotionWords.purple ? user.emotionWords.purple : 'FEAR' %>">
+        </form>
+
+        <% if (typeof wordsError !== 'undefined' && wordsError) { %>
+          <p class="error-message"><%= wordsError %></p>
+        <% } %>
+        <% if (typeof wordsSuccess !== 'undefined' && wordsSuccess) { %>
+          <p class="success-message"><%= wordsSuccess %></p>
+        <% } %>
+      </div>
+
+      <!-- Word Edit Modal -->
+      <div id="wordModal" class="word-modal" style="display: none;">
+        <div class="word-modal-content">
+          <div class="word-modal-header">
+            <h2 id="wordModalTitle">EDIT WORD</h2>
+            <button type="button" class="close-modal-btn" onclick="closeWordModal()">×</button>
+          </div>
+          <form id="wordEditForm" class="settings-form">
+            <div class="form-group">
+              <label id="wordModalLabel">WORD</label>
+              <input type="text" id="wordModalInput" class="form-input" placeholder="Enter word">
+            </div>
+            <button type="button" class="submit-btn" onclick="saveWord()">SAVE</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="settings-section">
+        <h2>ACTIONS</h2>
+        <div class="settings-item">
+          <a href="/feedback" class="settings-link">FEEDBACK</a>
+        </div>
+        <div class="settings-item">
+          <a href="/logout" class="settings-link logout-link">LOGOUT</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentEmotion = null;
+
+    // Password Modal Functions
+    function openPasswordModal() {
+      const modal = document.getElementById('passwordModal');
+      modal.style.display = 'flex';
+    }
+
+    function closePasswordModal() {
+      const modal = document.getElementById('passwordModal');
+      modal.style.display = 'none';
+      // Reset form
+      document.getElementById('passwordForm').reset();
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('passwordModal')?.addEventListener('click', function(e) {
+      if (e.target.id === 'passwordModal') {
+        closePasswordModal();
+      }
+    });
+
+    // Word Modal Functions
+    function openWordModal(emotion, currentWord) {
+      currentEmotion = emotion;
+      const modal = document.getElementById('wordModal');
+      const input = document.getElementById('wordModalInput');
+      const label = document.getElementById('wordModalLabel');
+      const title = document.getElementById('wordModalTitle');
+      
+      // Set emotion-specific labels
+      const emotionLabels = {
+        red: 'RED (ANGER)',
+        yellow: 'YELLOW (JOY)',
+        green: 'GREEN (DISGUST)',
+        blue: 'BLUE (SADNESS)',
+        purple: 'PURPLE (FEAR)'
+      };
+      
+      title.textContent = 'EDIT ' + emotionLabels[emotion].split('(')[0].trim();
+      label.textContent = emotionLabels[emotion];
+      input.value = currentWord;
+      modal.style.display = 'flex';
+    }
+
+    // Add click handlers to emotion word items
+    document.querySelectorAll('.emotion-word-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const emotion = this.getAttribute('data-emotion');
+        const word = this.getAttribute('data-word');
+        openWordModal(emotion, word);
+      });
+    });
+
+    function closeWordModal() {
+      const modal = document.getElementById('wordModal');
+      modal.style.display = 'none';
+      currentEmotion = null;
+      document.getElementById('wordEditForm').reset();
+    }
+
+    function saveWord() {
+      if (!currentEmotion) return;
+      
+      const input = document.getElementById('wordModalInput');
+      const newWord = input.value.trim();
+      
+      if (!newWord) {
+        alert('Please enter a word');
+        return;
+      }
+
+      // Update the hidden form field for this emotion
+      const emotionFieldMap = {
+        red: 'wordRed',
+        yellow: 'wordYellow',
+        green: 'wordGreen',
+        blue: 'wordBlue',
+        purple: 'wordPurple'
+      };
+
+      const fieldId = emotionFieldMap[currentEmotion];
+      document.getElementById(fieldId).value = newWord;
+
+      // Update the displayed word
+      const emotionItems = document.querySelectorAll('.emotion-word-item');
+      const emotionIndex = ['red', 'yellow', 'green', 'blue', 'purple'].indexOf(currentEmotion);
+      if (emotionItems[emotionIndex]) {
+        emotionItems[emotionIndex].querySelector('.emotion-word-text').textContent = newWord.toUpperCase();
+      }
+
+      // Submit the form
+      document.getElementById('wordsForm').submit();
+    }
+
+    // Close word modal when clicking outside
+    document.getElementById('wordModal')?.addEventListener('click', function(e) {
+      if (e.target.id === 'wordModal') {
+        closeWordModal();
+      }
+    });
+
+    // Form submission handlers
+    document.getElementById('passwordForm')?.addEventListener('submit', function(e) {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      
+      if (newPassword !== confirmPassword) {
+        e.preventDefault();
+        alert('New password and confirm password do not match');
+        return false;
+      }
+      
+      const btn = this.querySelector('.submit-btn');
+      btn.textContent = 'SAVING...';
+      btn.disabled = true;
+    });
+  </script>
+</body>
+
+</html>

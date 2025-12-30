@@ -36,7 +36,6 @@ const islands = []
 let smallRadiusUserAddedCount = 0;
 let largeRadiusUserAddedCount = 0;
 
-// Island orbit group - center container at (0,0,0)
 let islandOrbitGroup = null
 
 // Scroll navigation variables
@@ -47,9 +46,9 @@ let islandCurrentPositionIndices = [] // Track which position index each island 
 let islandCircleType = [] // Track which circle each island belongs to: 'small' or 'large'
 let isScrolling = false
 
-let radius = 13
+let radius = 12
 let height = 0
-let radius2 = 21
+let radius2 = 20
 const smallRadiusMemoryCount = 8
 const largeRadiusMemoryCount = 12
 
@@ -65,29 +64,28 @@ const islandAnglesSmall = [
 ]
 
 const islandAnglesLarge = [
-	0 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	1 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	2 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	3 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	4 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	5 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	6 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	7 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	8 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	9 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	10 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
-	11 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .1),
+	0 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	1 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	2 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	3 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	4 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	5 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	6 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	7 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	8 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	9 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	10 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
+	11 * (Math.PI * 2) / largeRadiusMemoryCount - (Math.PI / 8 + .15),
 ];
 
 const islandPositionsSmall = [
 	{ x: Math.cos(islandAnglesSmall[0]) * radius, y: 0, z: Math.sin(islandAnglesSmall[0]) * radius },
-	// { x: 2, y: 0, z: 2 },
 	{ x: Math.cos(islandAnglesSmall[1]) * radius, y: 0, z: Math.sin(islandAnglesSmall[1]) * radius },
 	{ x: Math.cos(islandAnglesSmall[2]) * radius, y: 0, z: Math.sin(islandAnglesSmall[2]) * radius },
 	{ x: Math.cos(islandAnglesSmall[3]) * radius, y: 0, z: Math.sin(islandAnglesSmall[3]) * radius },
-	{ x: Math.cos(islandAnglesSmall[4]) * radius, y: 0, z: Math.sin(islandAnglesSmall[4]) * radius },
-	{ x: Math.cos(islandAnglesSmall[5]) * radius, y: 0, z: Math.sin(islandAnglesSmall[5]) * radius },
-	{ x: Math.cos(islandAnglesSmall[6]) * radius, y: 0, z: Math.sin(islandAnglesSmall[6]) * radius },
+	{ x: Math.cos(islandAnglesSmall[4]) * (radius + 2), y: 0, z: Math.sin(islandAnglesSmall[4]) * (radius + 2) },
+	{ x: Math.cos(islandAnglesSmall[5]) * (radius + 2), y: 0, z: Math.sin(islandAnglesSmall[5]) * (radius + 2) },
+	{ x: Math.cos(islandAnglesSmall[6]) * (radius + 2), y: 0, z: Math.sin(islandAnglesSmall[6]) * (radius + 2) },
 	{ x: Math.cos(islandAnglesSmall[7]) * radius, y: 0, z: Math.sin(islandAnglesSmall[7]) * radius },
 ]
 
@@ -99,11 +97,11 @@ const islandPositionsLarge = [
 	{ x: Math.cos(islandAnglesLarge[4]) * radius2, y: 0, z: Math.sin(islandAnglesLarge[4]) * radius2 },
 	{ x: Math.cos(islandAnglesLarge[5]) * radius2, y: 0, z: Math.sin(islandAnglesLarge[5]) * radius2 },
 	{ x: Math.cos(islandAnglesLarge[6]) * radius2, y: 0, z: Math.sin(islandAnglesLarge[6]) * radius2 },
-	{ x: Math.cos(islandAnglesLarge[7]) * radius2, y: 0, z: Math.sin(islandAnglesLarge[7]) * radius2 },
-	{ x: Math.cos(islandAnglesLarge[8]) * radius2, y: 0, z: Math.sin(islandAnglesLarge[8]) * radius2 },
-	{ x: Math.cos(islandAnglesLarge[9]) * (radius2 + 3), y: 0, z: Math.sin(islandAnglesLarge[9]) * (radius2 + 3) },
-	{ x: Math.cos(islandAnglesLarge[10]) * (radius2 + 3), y: 0, z: Math.sin(islandAnglesLarge[10]) * (radius2 + 3) },
-	{ x: Math.cos(islandAnglesLarge[11]) * (radius2 + 3), y: 0, z: Math.sin(islandAnglesLarge[11]) * (radius2 + 3) },
+	{ x: Math.cos(islandAnglesLarge[7]) * (radius2 + 8), y: 0, z: Math.sin(islandAnglesLarge[7]) * (radius2 + 8) },
+	{ x: Math.cos(islandAnglesLarge[8]) * (radius2 + 8), y: 0, z: Math.sin(islandAnglesLarge[8]) * (radius2 + 8) },
+	{ x: Math.cos(islandAnglesLarge[9]) * (radius2 + 8), y: 0, z: Math.sin(islandAnglesLarge[9]) * (radius2 + 8) },
+	{ x: Math.cos(islandAnglesLarge[10]) * (radius2 + 8), y: 0, z: Math.sin(islandAnglesLarge[10]) * (radius2 + 8) },
+	{ x: Math.cos(islandAnglesLarge[11]) * (radius2 + 8), y: 0, z: Math.sin(islandAnglesLarge[11]) * (radius2 + 8) },
 ]
 
 const raycaster = new THREE.Raycaster()
@@ -221,6 +219,7 @@ async function addIslands() {
 		const y = islandPositionsSmall[innerCount].y
 		const z = islandPositionsSmall[innerCount].z
 		const islandGroup = addIsland(userIslands[userIndex].name, islandOrbitGroup, new THREE.Vector3(x, y, z), new THREE.Vector3(1, 1, 1), loadingManager, meshes, userIslands[userIndex].color, userIslands[userIndex].model)
+		islandGroup.userData.islandData = userIslands[userIndex] // Store island data for memory display
 		islandGroups.push(islandGroup)
 		islandCurrentPositionIndices.push(innerCount)
 		islandCircleType.push('small')
@@ -235,6 +234,7 @@ async function addIslands() {
 		const y = islandPositionsLarge[outerCount].y
 		const z = islandPositionsLarge[outerCount].z
 		const islandGroup = addIsland(userIslands[userIndex].name, islandOrbitGroup, new THREE.Vector3(x, y, z), new THREE.Vector3(1, 1, 1), loadingManager, meshes, userIslands[userIndex].color, userIslands[userIndex].model)
+		islandGroup.userData.islandData = userIslands[userIndex] // Store island data for memory display
 		islandGroups.push(islandGroup)
 		islandCurrentPositionIndices.push(outerCount)
 		islandCircleType.push('large')
@@ -249,6 +249,7 @@ async function addIslands() {
 		const y = islandPositionsSmall[innerCount].y
 		const z = islandPositionsSmall[innerCount].z
 		const islandGroup = addIsland(userIslands[userIndex].name, islandOrbitGroup, new THREE.Vector3(x, y, z), new THREE.Vector3(1, 1, 1), loadingManager, meshes, userIslands[userIndex].color, userIslands[userIndex].model)
+		islandGroup.userData.islandData = userIslands[userIndex] // Store island data for memory display
 		islandGroups.push(islandGroup)
 		islandCurrentPositionIndices.push(innerCount)
 		islandCircleType.push('small')
@@ -263,6 +264,7 @@ async function addIslands() {
 		const y = islandPositionsLarge[outerCount].y
 		const z = islandPositionsLarge[outerCount].z
 		const islandGroup = addIsland(userIslands[userIndex].name, islandOrbitGroup, new THREE.Vector3(x, y, z), new THREE.Vector3(1, 1, 1), loadingManager, meshes, userIslands[userIndex].color, userIslands[userIndex].model)
+		islandGroup.userData.islandData = userIslands[userIndex] // Store island data for memory display
 		islandGroups.push(islandGroup)
 		islandCurrentPositionIndices.push(outerCount)
 		islandCircleType.push('large')
@@ -277,6 +279,7 @@ async function addIslands() {
 		const y = islandPositionsSmall[innerCount].y
 		const z = islandPositionsSmall[innerCount].z
 		const islandGroup = addIsland(userIslands[userIndex].name, islandOrbitGroup, new THREE.Vector3(x, y, z), new THREE.Vector3(1, 1, 1), loadingManager, meshes, userIslands[userIndex].color, userIslands[userIndex].model)
+		islandGroup.userData.islandData = userIslands[userIndex] // Store island data for memory display
 		islandGroups.push(islandGroup)
 		islandCurrentPositionIndices.push(innerCount)
 		islandCircleType.push('small')
@@ -291,6 +294,7 @@ async function addIslands() {
 		const y = islandPositionsLarge[outerCount].y
 		const z = islandPositionsLarge[outerCount].z
 		const islandGroup = addIsland(userIslands[userIndex].name, islandOrbitGroup, new THREE.Vector3(x, y, z), new THREE.Vector3(1, 1, 1), loadingManager, meshes, userIslands[userIndex].color, userIslands[userIndex].model)
+		islandGroup.userData.islandData = userIslands[userIndex] // Store island data for memory display
 		islandGroups.push(islandGroup)
 		islandCurrentPositionIndices.push(outerCount)
 		islandCircleType.push('large')
@@ -313,6 +317,7 @@ let focusedIsland = null
 const originalCameraPosition = { x: -24, y: 85, z: 100 }
 const originalControlsTarget = { x: 9, y: 1, z: 0 }
 const originalObjectPositions = new Map() // Store original positions for restoration
+let displayedMemoryObjects = [] // Store memory objects for cleanup
 
 function raycast() {
 	window.addEventListener('click', () => {
@@ -334,7 +339,7 @@ function raycast() {
 					console.log('landMain', models.landMain)
 					break
 				}
-				
+
 				if (object.userData && object.userData.groupName === 'island') {
 					if (!islandFocusMode) {
 						focusOnIsland(object)
@@ -446,28 +451,23 @@ function raycast() {
 function focusOnIsland(islandGroup) {
 	islandFocusMode = true
 	focusedIsland = islandGroup
-	
-	// Disable controls during focus
+
 	controls.enabled = false
-	
-	// Get world position of the island
+
 	const islandWorldPosition = new THREE.Vector3()
 	islandGroup.getWorldPosition(islandWorldPosition)
-	
-	// Calculate camera position (zoom in closer and slightly above)
+
 	const cameraOffset = new THREE.Vector3(-20, 50, 60)
-	// const cameraOffset = new THREE.Vector3(-20, 100, 100)
+	// const cameraOffset = new THREE.Vector3(-20, 500, 10)
 
 	const targetCameraPosition = {
 		x: islandWorldPosition.x + cameraOffset.x,
 		y: islandWorldPosition.y + cameraOffset.y,
 		z: islandWorldPosition.z + cameraOffset.z
 	}
-	
-	// Clear previous stored positions
+
 	originalObjectPositions.clear()
-	
-	// Move other islands out of view
+
 	islandGroups.forEach(island => {
 		if (island !== islandGroup) {
 			// Store original position
@@ -476,10 +476,9 @@ function focusOnIsland(islandGroup) {
 				y: island.position.y,
 				z: island.position.z
 			})
-			
-			// Determine direction based on x position
+
 			const moveOffset = island.position.x <= 0 ? -100 : 100
-			
+
 			gsap.to(island.position, {
 				x: island.position.x + moveOffset,
 				duration: 0.5,
@@ -487,24 +486,23 @@ function focusOnIsland(islandGroup) {
 			})
 		}
 	})
-	
-	// Move add button out of view
+
 	if (meshes.add) {
 		originalObjectPositions.set(meshes.add, {
 			x: meshes.add.position.x,
 			y: meshes.add.position.y,
 			z: meshes.add.position.z
 		})
-		
+
 		const moveOffset = meshes.add.position.x <= 10 ? -100 : 100
-		
+
 		gsap.to(meshes.add.position, {
 			x: meshes.add.position.x + moveOffset,
 			duration: 0.5,
 			ease: 'power2.inOut'
 		})
 	}
-	
+
 	// Move main land out of view
 	if (meshes.landMain) {
 		originalObjectPositions.set(meshes.landMain, {
@@ -512,16 +510,16 @@ function focusOnIsland(islandGroup) {
 			y: meshes.landMain.position.y,
 			z: meshes.landMain.position.z
 		})
-		
+
 		const moveOffset = meshes.landMain.position.x <= 10 ? -100 : 100
-		
+
 		gsap.to(meshes.landMain.position, {
 			x: meshes.landMain.position.x + moveOffset,
 			duration: 0.5,
 			ease: 'power2.inOut'
 		})
 	}
-	
+
 	// Animate camera to focus on island
 	gsap.to(camera.position, {
 		x: targetCameraPosition.x,
@@ -530,7 +528,7 @@ function focusOnIsland(islandGroup) {
 		duration: 1,
 		ease: 'power2.inOut'
 	})
-	
+
 	gsap.to(controls.target, {
 		x: islandWorldPosition.x,
 		y: islandWorldPosition.y,
@@ -541,7 +539,9 @@ function focusOnIsland(islandGroup) {
 			controls.update()
 		}
 	})
-	
+
+	displayFocusedIslandMemories(focusedIsland)
+
 	// Scale up the focused island slightly
 	// gsap.to(focusedIsland.scale, {
 	// 	x: 1.5,
@@ -552,11 +552,180 @@ function focusOnIsland(islandGroup) {
 	// })
 }
 
+async function displayFocusedIslandMemories(islandGroup) {
+	// Clear any existing memory objects
+	clearDisplayedMemories()
+
+	// Get island data
+	const islandData = islandGroup.userData.islandData
+	if (!islandData || !islandData.memories || islandData.memories.length === 0) {
+		console.log('No memories found for this island')
+		return
+	}
+
+	// Get island world position
+	const islandWorldPosition = new THREE.Vector3()
+	islandGroup.getWorldPosition(islandWorldPosition)
+
+	// Fetch memory data for each memory ID
+	const memoryPromises = islandData.memories.map(memoryId =>
+		fetch(`/api/memory/${memoryId}`)
+			.then(res => res.json())
+			.catch(err => {
+				console.error(`Error fetching memory ${memoryId}:`, err)
+				return null
+			})
+	)
+
+	const memories = await Promise.all(memoryPromises)
+	const validMemories = memories.filter(m => m !== null)
+
+	if (validMemories.length === 0) {
+		console.log('No valid memories found')
+		return
+	}
+
+	// Create memory group to hold all memory objects
+	const memoryGroup = new THREE.Group()
+	memoryGroup.name = 'islandMemories'
+	scene.add(memoryGroup)
+
+	// Position memories in a line behind the island
+	const memoryCount = validMemories.length
+	const lineDistance = 5 // Distance behind island
+	const lineLength = (memoryCount - 1) * 4 // Total length of the line (4 units spacing between memories)
+	const startX = islandWorldPosition.x - lineLength / 2 // Start position of the line
+
+	validMemories.forEach((memory, index) => {
+		const x = startX + (index * 4)
+		const z = islandWorldPosition.z - lineDistance
+		const y = islandWorldPosition.y + 2
+
+		const memoryObject = createMemoryObject(memory, new THREE.Vector3(x, y, z))
+		if (memoryObject) {
+			memoryGroup.add(memoryObject)
+			displayedMemoryObjects.push(memoryObject)
+		}
+	})
+
+	displayedMemoryObjects.push(memoryGroup) // Store group for cleanup
+
+	// Animate memories in
+	memoryGroup.children.forEach((child, index) => {
+		child.position.y -= 5 // Start below
+		child.scale.set(0, 0, 0)
+		gsap.to(child.position, {
+			y: child.position.y + 5,
+			duration: 0.8,
+			delay: index * 0.1,
+			ease: 'power2.out'
+		})
+		gsap.to(child.scale, {
+			x: 1,
+			y: 1,
+			z: 1,
+			duration: 0.8,
+			delay: index * 0.1,
+			ease: 'back.out(1.7)'
+		})
+	})
+}
+
+function createMemoryObject(memory, position) {
+	const memoryGroup = new THREE.Group()
+	memoryGroup.position.copy(position)
+
+	// Emotion color mapping
+	const emotionColors = {
+		'red': 0xED705C,
+		'yellow': 0xF3D074,
+		'green': 0xB9D580,
+		'blue': 0x86BBE7,
+		'purple': 0xB185D0
+	}
+
+	const emotionColor = emotionColors[memory.emotion] || 0xffffff
+
+	// Create a plane for the memory
+	const planeSize = 3
+	const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize)
+	createColoredMemoryPlane(memoryGroup, planeGeometry, emotionColor)
+
+	const glowGeometry = new THREE.PlaneGeometry(planeSize * 1.2, planeSize * 1.2)
+	const glowMaterial = new THREE.MeshBasicMaterial({
+		color: emotionColor,
+		transparent: true,
+		opacity: 0.3,
+		side: THREE.DoubleSide
+	})
+	const glow = new THREE.Mesh(glowGeometry, glowMaterial)
+	glow.rotation.y = Math.PI
+	glow.position.z = -0.01
+	memoryGroup.add(glow)
+
+	if (memory.title) {
+		// Create a simple text representation using a sprite or geometry
+		// For now, we'll just use the colored plane
+	}
+
+	return memoryGroup
+}
+
+function createColoredMemoryPlane(parent, geometry, color) {
+	const material = new THREE.MeshStandardMaterial({
+		color: color,
+		side: THREE.DoubleSide,
+		emissive: new THREE.Color(color),
+		emissiveIntensity: 0.3
+	})
+	const plane = new THREE.Mesh(geometry, material)
+	plane.rotation.y = Math.PI
+	parent.add(plane)
+} 
+
+function clearDisplayedMemories() {
+	displayedMemoryObjects.forEach(obj => {
+		if (obj.parent) {
+			obj.parent.remove(obj)
+		}
+		if (obj.geometry) obj.geometry.dispose()
+		if (obj.material) {
+			if (Array.isArray(obj.material)) {
+				obj.material.forEach(mat => {
+					if (mat.map) mat.map.dispose()
+					mat.dispose()
+				})
+			} else {
+				if (obj.material.map) obj.material.map.dispose()
+				obj.material.dispose()
+			}
+		}
+		obj.traverse(child => {
+			if (child.geometry) child.geometry.dispose()
+			if (child.material) {
+				if (Array.isArray(child.material)) {
+					child.material.forEach(mat => {
+						if (mat.map) mat.map.dispose()
+						mat.dispose()
+					})
+				} else {
+					if (child.material.map) child.material.map.dispose()
+					child.material.dispose()
+				}
+			}
+		})
+	})
+	displayedMemoryObjects = []
+}
+
 function exitFocusMode() {
 	if (!islandFocusMode) return
-	
+
 	islandFocusMode = false
-	
+
+	// Clear displayed memories
+	clearDisplayedMemories()
+
 	// Restore camera position
 	gsap.to(camera.position, {
 		x: originalCameraPosition.x,
@@ -565,7 +734,7 @@ function exitFocusMode() {
 		duration: 1,
 		ease: 'power2.inOut'
 	})
-	
+
 	gsap.to(controls.target, {
 		x: originalControlsTarget.x,
 		y: originalControlsTarget.y,
@@ -579,7 +748,7 @@ function exitFocusMode() {
 			controls.enabled = true
 		}
 	})
-	
+
 	// Restore all objects to their original positions
 	originalObjectPositions.forEach((originalPos, object) => {
 		gsap.to(object.position, {
@@ -590,7 +759,7 @@ function exitFocusMode() {
 			ease: 'power2.inOut'
 		})
 	})
-	
+
 	focusedIsland = null
 }
 
@@ -607,7 +776,7 @@ function setupScrollNavigation() {
 			moveIslandsToPreviousPositions(direction > 0)
 		}
 	}, { passive: true })
-	
+
 	// Add ESC key to exit focus mode
 	window.addEventListener('keydown', (event) => {
 		if (event.key === 'Escape' && islandFocusMode) {
@@ -661,8 +830,9 @@ function moveIslandsToPreviousPositions(backwards = true) {
 		if (circleType === 'small') {
 			// Check if island is exiting visible area or entering visible area
 			if (backwards) {
-				// Moving backwards: 0→7, islands at position 0 exit through 7
-				if (currentPosIndex === VISIBLE_START && targetIndex >= VISIBLE_END) {
+				// console.log('currentPosIndex', currentPosIndex, '= VISIBLE_START', VISIBLE_START)
+				// console.log('targetIndex', targetIndex, '>=VISIBLE_END', VISIBLE_END)
+				if (targetIndex >= VISIBLE_END && currentPosIndex == VISIBLE_START) {
 					needsCircularPath = true
 					// Path: current → 7 (exit) → 6 → 5 (entry) → target
 					for (let idx = OFFSCREEN_EXIT; idx >= OFFSCREEN_ENTRY; idx--) {
@@ -684,9 +854,11 @@ function moveIslandsToPreviousPositions(backwards = true) {
 					}
 				}
 			} else {
-				// Moving forwards: 4→5, islands at position 4 exit through 5
-				if (currentPosIndex === VISIBLE_END && targetIndex <= VISIBLE_START) {
+				console.log('currentPosIndex', currentPosIndex, '= VISIBLE_END', VISIBLE_END, '\ntargetIndex', targetIndex, '<= VISIBLE_START', VISIBLE_START)
+
+				if (targetIndex <= VISIBLE_START) {
 					needsCircularPath = true
+					console.log('needsCircularPath', needsCircularPath, currentPosIndex, targetIndex)
 					// Path: current → 5 (entry/exit) → 6 → 7 (exit) → target
 					for (let idx = OFFSCREEN_ENTRY; idx <= OFFSCREEN_EXIT; idx++) {
 						if (idx !== currentPosIndex) {
@@ -714,13 +886,13 @@ function moveIslandsToPreviousPositions(backwards = true) {
 			const LARGE_OFFSCREEN_EXIT = 11
 
 			if (backwards) {
-				// Moving backwards: 0→11, islands at position 0 exit through 11
-				if (currentPosIndex === VISIBLE_START && targetIndex >= LARGE_VISIBLE_END) {
+				// console.log('currentPosIndex', currentPosIndex, '= VISIBLE_START', VISIBLE_START, '\ntargetIndex', targetIndex, '>=LARGE_VISIBLE_END', LARGE_VISIBLE_END)
+				if (targetIndex >= LARGE_VISIBLE_END && currentPosIndex == VISIBLE_START) {
 					needsCircularPath = true
-					// Path: current → 11 (exit) → 10 → ... → 5 (entry) → target
+					// console.log('needsCircularPath', needsCircularPath)
 					for (let idx = LARGE_OFFSCREEN_EXIT; idx >= LARGE_OFFSCREEN_ENTRY; idx--) {
 						if (idx !== currentPosIndex) {
-							const adjustedRadius = idx >= 9 ? radiusValue + 2 : radiusValue
+							const adjustedRadius = idx >= 9 ? radiusValue + 4 : radiusValue
 							waypoints.push({
 								x: Math.cos(anglesArray[idx]) * adjustedRadius,
 								y: 0,
@@ -728,7 +900,6 @@ function moveIslandsToPreviousPositions(backwards = true) {
 							})
 						}
 					}
-					// Add remaining path to target
 					for (let idx = LARGE_OFFSCREEN_ENTRY - 1; idx >= targetIndex; idx--) {
 						waypoints.push({
 							x: Math.cos(anglesArray[idx]) * radiusValue,
@@ -738,13 +909,14 @@ function moveIslandsToPreviousPositions(backwards = true) {
 					}
 				}
 			} else {
-				// Moving forwards: 4→5, islands at position 4 exit through 5
-				if (currentPosIndex === LARGE_VISIBLE_END && targetIndex <= VISIBLE_START) {
+				// console.log('currentPosIndex', currentPosIndex, '= LARGE_VISIBLE_END', LARGE_VISIBLE_END, '\ntargetIndex', targetIndex, '<= VISIBLE_START', VISIBLE_START)
+				if (targetIndex <= VISIBLE_START) {
 					needsCircularPath = true
-					// Path: current → 5 (entry) → 6 → ... → 11 (exit) → target
+					// console.log('needsCircularPath', needsCircularPath)
+
 					for (let idx = LARGE_OFFSCREEN_ENTRY; idx <= LARGE_OFFSCREEN_EXIT; idx++) {
 						if (idx !== currentPosIndex) {
-							const adjustedRadius = idx >= 9 ? radiusValue + 2 : radiusValue
+							const adjustedRadius = idx >= 9 ? radiusValue + 4 : radiusValue
 							waypoints.push({
 								x: Math.cos(anglesArray[idx]) * adjustedRadius,
 								y: 0,
@@ -752,7 +924,6 @@ function moveIslandsToPreviousPositions(backwards = true) {
 							})
 						}
 					}
-					// Wrap around to beginning
 					for (let idx = 0; idx <= targetIndex; idx++) {
 						waypoints.push({
 							x: Math.cos(anglesArray[idx]) * radiusValue,
@@ -798,19 +969,17 @@ function moveIslandsToPreviousPositions(backwards = true) {
 			// Add each waypoint to the timeline with variable speed
 			waypoints.forEach((waypoint, wpIndex) => {
 				let duration
-				// First waypoint (exit): normal speed
 				if (wpIndex === 0) {
 					duration = 0.3
 				}
-				// Last waypoint before final position (entry): normal speed
 				else if (wpIndex === waypoints.length - 1) {
 					duration = 0.3
 				}
-				// Middle waypoints (looping through offscreen): very fast
 				else {
 					duration = 0.001
+					// duration = 0.1
 				}
-				
+
 				timeline.to(island.position, {
 					x: waypoint.x,
 					y: waypoint.y,

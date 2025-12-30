@@ -21,6 +21,7 @@
     "masto": "^7.7.1",
     "multer": "^2.0.2",
     "nedb-promises-session-store": "^1.0.4",
+    "nodemailer": "^7.0.12",
     "three": "^0.181.2"
   }
 }

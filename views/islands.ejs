@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PALETTE U - All Islands</title>
+  <link rel="icon" href="/assets/images/logo-transparent.png">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/all-islands.css">
+  <script src="/js/script.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+
+<body>
+  <%- include('components/header.ejs') %>
+
+  <div class="main-body">
+  <h1>ALL ISLANDS</h1>
+
+    <% if (islands.length === 0) { %>
+      <p class="no-islands">No islands yet. <a href="/add-island">Create your first island</a></p>
+    <% } else { %>
+      <div id="islands-canvas-container" class="islands-canvas-container"></div>
+    <% } %>
+  </div>
+
+  <!-- Edit Island Modal -->
+  <div id="edit-island-modal" class="edit-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>EDIT ISLAND</h2>
+        <button class="close-modal-btn" onclick="closeEditModal()">×</button>
+      </div>
+      
+      <form id="edit-island-form" class="edit-form">
+        <input type="hidden" id="edit-island-id" name="islandId">
+        
+        <div class="form-group">
+          <label for="edit-island-name">NAME</label>
+          <input type="text" id="edit-island-name" name="name" required class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-island-color">COLOR</label>
+          <input type="text" id="edit-island-color" name="color" class="form-input" placeholder="Color number">
+        </div>
+
+        <div class="form-group">
+          <label for="edit-island-model">MODEL</label>
+          <input type="text" id="edit-island-model" name="model" class="form-input" placeholder="Model name">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-delete" onclick="deleteIsland()">DELETE</button>
+          <button type="submit" class="btn-save">SAVE</button>
+        </div>
+      </form>
+
+      <div id="edit-modal-memories" class="modal-memories-section">
+        <!-- Memories will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Pass islands data to Three.js
+    window.islandsData = <%- JSON.stringify(islands || []) %>;
+    window.allMemoriesData = <%- JSON.stringify(allMemories || []) %>;
+  </script>
+  <script type="module" src="/js/threejs/all-islands-page.js"></script>
+  <script>
+    let currentIslandData = null;
+
+    // Listen for island click event
+    window.addEventListener('openIslandEdit', (event) => {
+      currentIslandData = event.detail;
+      openEditModal(event.detail);
+    });
+
+    function openEditModal(islandData) {
+      currentIslandData = islandData;
+      const modal = document.getElementById('edit-island-modal');
+      
+      // Populate form
+      document.getElementById('edit-island-id').value = islandData._id;
+      document.getElementById('edit-island-name').value = islandData.name || '';
+      document.getElementById('edit-island-color').value = islandData.color || '';
+      document.getElementById('edit-island-model').value = islandData.model || '';
+      
+      // Load memories
+      loadIslandMemories(islandData);
+      
+      modal.style.display = 'flex';
+    }
+
+    function closeEditModal() {
+      document.getElementById('edit-island-modal').style.display = 'none';
+      currentIslandData = null;
+    }
+
+    function loadIslandMemories(islandData) {
+      const container = document.getElementById('edit-modal-memories');
+      container.innerHTML = '<h3>MEMORIES</h3>';
+      
+      if (islandData.islandMemories && islandData.islandMemories.length > 0) {
+        const memoriesList = document.createElement('div');
+        memoriesList.className = 'memories-list';
+        
+        islandData.islandMemories.forEach(memory => {
+          const memoryItem = document.createElement('div');
+          memoryItem.className = 'memory-item';
+          memoryItem.innerHTML = `
+            <div class="memory-content">
+              ${memory.imgSrc && memory.imgSrc.length > 0 ? 
+                `<img src="${Array.isArray(memory.imgSrc) ? memory.imgSrc[0] : memory.imgSrc}" alt="memory" class="memory-thumbnail">` : ''}
+              <div class="memory-info">
+                <p class="memory-title">${memory.title || 'Untitled'}</p>
+                <p class="memory-date">${memory.date || 'No date'}</p>
+              </div>
+            </div>
+            <button class="remove-memory-btn" onclick="removeMemoryFromIsland('${islandData._id}', '${memory._id}')">REMOVE</button>
+          `;
+          memoriesList.appendChild(memoryItem);
+        });
+        
+        container.appendChild(memoriesList);
+      } else {
+        container.innerHTML += '<p class="no-memories">No memories in this island</p>';
+      }
+      
+      // Add available memories section
+      const availableSection = document.createElement('div');
+      availableSection.className = 'available-memories-section';
+      availableSection.innerHTML = '<h3>ADD MEMORIES</h3>';
+      
+      const availableMemories = window.allMemoriesData.filter(m => {
+        return !islandData.islandMemories || !islandData.islandMemories.some(im => im._id === m._id);
+      });
+      
+      if (availableMemories.length > 0) {
+        const memoriesList = document.createElement('div');
+        memoriesList.className = 'memories-list';
+        
+        availableMemories.forEach(memory => {
+          const memoryItem = document.createElement('div');
+          memoryItem.className = 'memory-item addable';
+          memoryItem.innerHTML = `
+            <div class="memory-content">
+              ${memory.imgSrc && memory.imgSrc.length > 0 ? 
+                `<img src="${Array.isArray(memory.imgSrc) ? memory.imgSrc[0] : memory.imgSrc}" alt="memory" class="memory-thumbnail">` : ''}
+              <div class="memory-info">
+                <p class="memory-title">${memory.title || 'Untitled'}</p>
+                <p class="memory-date">${memory.date || 'No date'}</p>
+              </div>
+            </div>
+            <button class="add-memory-btn" onclick="addMemoryToIsland('${islandData._id}', '${memory._id}')">ADD</button>
+          `;
+          memoriesList.appendChild(memoryItem);
+        });
+        
+        availableSection.appendChild(memoriesList);
+      } else {
+        availableSection.innerHTML += '<p class="no-memories">All memories are already in this island</p>';
+      }
+      
+      container.appendChild(availableSection);
+    }
+
+    // Form submission
+    document.getElementById('edit-island-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(e.target);
+      const islandId = formData.get('islandId');
+      const newName = formData.get('name');
+      
+      try {
+        const response = await fetch('/islands/update-name', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `islandId=${islandId}&newName=${encodeURIComponent(newName)}`
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          alert('Island updated successfully');
+          location.reload();
+        } else {
+          alert('Error updating island: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Error updating island');
+      }
+    });
+
+    async function deleteIsland() {
+      if (!currentIslandData) return;
+      
+      if (!confirm('Are you sure you want to delete this island? This will remove it from all associated memories.')) {
+        return;
+      }
+
+      try {
+        const response = await fetch('/islands/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `islandId=${currentIslandData._id}`
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Error deleting island: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Error deleting island');
+      }
+    }
+
+    async function addMemoryToIsland(islandId, memoryId) {
+      try {
+        const response = await fetch('/islands/add-memory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `islandId=${islandId}&memoryId=${memoryId}`
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Error adding memory: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Error adding memory');
+      }
+    }
+
+    async function removeMemoryFromIsland(islandId, memoryId) {
+      try {
+        const response = await fetch('/islands/remove-memory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `islandId=${islandId}&memoryId=${memoryId}`
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Error removing memory: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        alert('Error removing memory');
+      }
+    }
+
+    // Close modal on outside click
+    document.getElementById('edit-island-modal').addEventListener('click', (e) => {
+      if (e.target.id === 'edit-island-modal') {
+        closeEditModal();
+      }
+    });
+  </script>
+</body>
+
+</html>

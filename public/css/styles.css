@@ -253,17 +253,20 @@ header {
 
 /* handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(to bottom, var(--color-red), var(--color-yellow), var(--color-green), var(--color-blue), var(--color-purple));
+    /* background: linear-gradient(to bottom, var(--color-red), var(--color-yellow), var(--color-green), var(--color-blue), var(--color-purple)); */
+    background-color: var(--color-pink);
+
 }
 
 
 body.scrolling::-webkit-scrollbar-thumb {
-    background: linear-gradient(to bottom,
+    /* background: linear-gradient(to bottom,
             var(--color-red),
             var(--color-yellow),
             var(--color-green),
             var(--color-blue),
-            var(--color-purple));
+            var(--color-purple)); */
+    background-color: var(--color-pink);
 }
 
 .header-container-top {
@@ -289,10 +292,11 @@ body.scrolling::-webkit-scrollbar-thumb {
     height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;    
+    justify-content: center;
     top: 0;
     z-index: 101;
 }
+
 .add-island-button img {
     width: 25px;
     height: 25px;
@@ -454,6 +458,7 @@ body.scrolling::-webkit-scrollbar-thumb {
 
 .dropdown-menu-content-item img {
     height: 18px;
+    width: 22px;
 }
 
 @media (max-width: 1024px) {
@@ -509,4 +514,3 @@ body.scrolling::-webkit-scrollbar-thumb {
     background-color: var(--color-purple) !important;
     color: var(--color-black);
 }
-

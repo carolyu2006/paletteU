@@ -9,6 +9,7 @@ const nedbSessionStore = require('nedb-promises-session-store')
 const bcrypt = require('bcryptjs')
 const fs = require('fs')
 const path = require('path')
+const nodemailer = require('nodemailer')
 
 let memories = [];
 
@@ -325,30 +326,72 @@ app.post('/add-memory', requiresAuthentication, upload.array('image-input'), (re
   })
 });
 
-app.get('/home', requiresAuthentication, (req, res) => {
+app.get('/home', requiresAuthentication, async (req, res) => {
   const username = req.session.loggedInUser;
 
-  memoriesdb.find({ username: username }, (err, userMemories) => {
-    if (err) {
-      console.error('Error fetching memories:', err);
-      return res.render('index.ejs', { memoryCount: 0, trainUnlocked: false, trainMemory: [] });
-    }
+  try {
+    const user = await userdb.findOneAsync({ username: username });
+    
+    memoriesdb.find({ username: username }, (err, userMemories) => {
+      if (err) {
+        console.error('Error fetching memories:', err);
+        return res.render('index.ejs', { 
+          memoryCount: 0, 
+          trainUnlocked: false, 
+          trainMemory: [],
+          emotionWords: null
+        });
+      }
 
-    const memoryCount = userMemories ? userMemories.length : 0;
-    const trainUnlocked = memoryCount >= 6;
+      const memoryCount = userMemories ? userMemories.length : 0;
+      const trainUnlocked = memoryCount >= 6;
 
-    let trainMemory = [];
-    if (userMemories && userMemories.length > 0) {
-      const shuffled = [...userMemories].sort(() => 0.5 - Math.random());
-      trainMemory = shuffled.slice(0, 6);
-    }
+      let trainMemory = [];
+      if (userMemories && userMemories.length > 0) {
+        const shuffled = [...userMemories].sort(() => 0.5 - Math.random());
+        trainMemory = shuffled.slice(0, 6);
+      }
 
-    res.render('index.ejs', {
-      memoryCount: memoryCount,
-      trainUnlocked: trainUnlocked,
-      trainMemory: trainMemory
+      // Get emotion words from user or use defaults
+      const emotionWords = user && user.emotionWords ? user.emotionWords : {
+        red: 'ANGER',
+        yellow: 'JOY',
+        green: 'DISGUST',
+        blue: 'SADNESS',
+        purple: 'FEAR'
+      };
+
+      res.render('index.ejs', {
+        memoryCount: memoryCount,
+        trainUnlocked: trainUnlocked,
+        trainMemory: trainMemory,
+        emotionWords: emotionWords
+      });
     });
-  });
+  } catch (err) {
+    console.error('Error loading user:', err);
+    memoriesdb.find({ username: username }, (err, userMemories) => {
+      const memoryCount = userMemories ? userMemories.length : 0;
+      const trainUnlocked = memoryCount >= 6;
+      let trainMemory = [];
+      if (userMemories && userMemories.length > 0) {
+        const shuffled = [...userMemories].sort(() => 0.5 - Math.random());
+        trainMemory = shuffled.slice(0, 6);
+      }
+      res.render('index.ejs', {
+        memoryCount: memoryCount,
+        trainUnlocked: trainUnlocked,
+        trainMemory: trainMemory,
+        emotionWords: {
+          red: 'ANGER',
+          yellow: 'JOY',
+          green: 'DISGUST',
+          blue: 'SADNESS',
+          purple: 'FEAR'
+        }
+      });
+    });
+  }
 })
 
 app.get('/api/memory/:id', requiresAuthentication, (req, res) => {
@@ -532,6 +575,592 @@ app.post('/manager/delete-model', (req, res) => {
 app.get('/manager/logout', (req, res) => {
   delete req.session.managerAuthenticated;
   res.redirect('/manager');
+});
+
+// Islands management page
+app.get('/all-islands', requiresAuthentication, async (req, res) => {
+  const username = req.session.loggedInUser;
+  
+  try {
+    const userIslands = await islandsdb.findAsync({ username: username });
+    const userMemories = await memoriesdb.findAsync({ username: username });
+    
+    // Populate memories for each island
+    const islandsWithMemories = await Promise.all(
+      userIslands.map(async (island) => {
+        const islandMemories = [];
+        if (island.memories && island.memories.length > 0) {
+          for (const memoryId of island.memories) {
+            const memory = await memoriesdb.findOneAsync({ _id: memoryId });
+            if (memory) {
+              islandMemories.push(memory);
+            }
+          }
+        }
+        return {
+          ...island,
+          islandMemories: islandMemories
+        };
+      })
+    );
+    
+    res.render('all-islands.ejs', {
+      islands: islandsWithMemories,
+      allMemories: userMemories
+    });
+  } catch (err) {
+    console.error('Error loading islands:', err);
+    res.render('all-islands.ejs', { islands: [], allMemories: [] });
+  }
+});
+
+// Update island name
+app.post('/islands/update-name', requiresAuthentication, upload.none(), async (req, res) => {
+  const { islandId, newName } = req.body;
+  const username = req.session.loggedInUser;
+  
+  if (!islandId || !newName) {
+    return res.status(400).json({ error: 'Island ID and name are required' });
+  }
+  
+  try {
+    const island = await islandsdb.findOneAsync({ _id: islandId, username: username });
+    if (!island) {
+      return res.status(404).json({ error: 'Island not found' });
+    }
+    
+    await islandsdb.updateAsync(
+      { _id: islandId },
+      { $set: { name: newName } }
+    );
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error updating island name:', err);
+    res.status(500).json({ error: 'Error updating island name' });
+  }
+});
+
+// Delete island
+app.post('/islands/delete', requiresAuthentication, upload.none(), async (req, res) => {
+  const { islandId } = req.body;
+  const username = req.session.loggedInUser;
+  
+  if (!islandId) {
+    return res.status(400).json({ error: 'Island ID is required' });
+  }
+  
+  try {
+    const island = await islandsdb.findOneAsync({ _id: islandId, username: username });
+    if (!island) {
+      return res.status(404).json({ error: 'Island not found' });
+    }
+    
+    // Remove island ID from all memories that reference it
+    if (island.memories && island.memories.length > 0) {
+      for (const memoryId of island.memories) {
+        const memory = await memoriesdb.findOneAsync({ _id: memoryId });
+        if (memory && memory.island) {
+          const updatedIslands = memory.island.filter(id => id !== islandId);
+          await memoriesdb.updateAsync(
+            { _id: memoryId },
+            { $set: { island: updatedIslands } }
+          );
+        }
+      }
+    }
+    
+    // Delete the island
+    await islandsdb.removeAsync({ _id: islandId });
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting island:', err);
+    res.status(500).json({ error: 'Error deleting island' });
+  }
+});
+
+// Add memory to island
+app.post('/islands/add-memory', requiresAuthentication, upload.none(), async (req, res) => {
+  const { islandId, memoryId } = req.body;
+  const username = req.session.loggedInUser;
+  
+  if (!islandId || !memoryId) {
+    return res.status(400).json({ error: 'Island ID and Memory ID are required' });
+  }
+  
+  try {
+    const island = await islandsdb.findOneAsync({ _id: islandId, username: username });
+    const memory = await memoriesdb.findOneAsync({ _id: memoryId, username: username });
+    
+    if (!island) {
+      return res.status(404).json({ error: 'Island not found' });
+    }
+    if (!memory) {
+      return res.status(404).json({ error: 'Memory not found' });
+    }
+    
+    // Add memory to island if not already present
+    if (!island.memories) {
+      island.memories = [];
+    }
+    if (!island.memories.includes(memoryId)) {
+      island.memories.push(memoryId);
+      await islandsdb.updateAsync(
+        { _id: islandId },
+        { $set: { memories: island.memories } }
+      );
+    }
+    
+    // Add island to memory if not already present
+    if (!memory.island) {
+      memory.island = [];
+    }
+    if (!memory.island.includes(islandId)) {
+      memory.island.push(islandId);
+      await memoriesdb.updateAsync(
+        { _id: memoryId },
+        { $set: { island: memory.island } }
+      );
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error adding memory to island:', err);
+    res.status(500).json({ error: 'Error adding memory to island' });
+  }
+});
+
+// Remove memory from island
+app.post('/islands/remove-memory', requiresAuthentication, upload.none(), async (req, res) => {
+  const { islandId, memoryId } = req.body;
+  const username = req.session.loggedInUser;
+  
+  if (!islandId || !memoryId) {
+    return res.status(400).json({ error: 'Island ID and Memory ID are required' });
+  }
+  
+  try {
+    const island = await islandsdb.findOneAsync({ _id: islandId, username: username });
+    const memory = await memoriesdb.findOneAsync({ _id: memoryId, username: username });
+    
+    if (!island) {
+      return res.status(404).json({ error: 'Island not found' });
+    }
+    if (!memory) {
+      return res.status(404).json({ error: 'Memory not found' });
+    }
+    
+    // Remove memory from island
+    if (island.memories) {
+      const updatedMemories = island.memories.filter(id => id !== memoryId);
+      await islandsdb.updateAsync(
+        { _id: islandId },
+        { $set: { memories: updatedMemories } }
+      );
+    }
+    
+    // Remove island from memory
+    if (memory.island) {
+      const updatedIslands = memory.island.filter(id => id !== islandId);
+      await memoriesdb.updateAsync(
+        { _id: memoryId },
+        { $set: { island: updatedIslands } }
+      );
+    }
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error removing memory from island:', err);
+    res.status(500).json({ error: 'Error removing memory from island' });
+  }
+});
+
+// Settings page
+app.get('/settings', requiresAuthentication, async (req, res) => {
+  const username = req.session.loggedInUser;
+  
+  try {
+    const user = await userdb.findOneAsync({ username: username });
+    const userIslands = await islandsdb.findAsync({ username: username });
+    const userMemories = await memoriesdb.findAsync({ username: username });
+
+    const islandCount = userIslands ? userIslands.length : 0;
+    const maxIslands = 20; // MAX_INNER (8) + MAX_OUTER (12)
+    const memoryCount = userMemories ? userMemories.length : 0;
+    const maxMemories = 500;
+    
+    res.render('settings.ejs', {
+      user: user,
+      islandCount: islandCount,
+      maxIslands: maxIslands,
+      memoryCount: memoryCount,
+      maxMemories: maxMemories,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: null,
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  } catch (err) {
+    console.error('Error loading settings:', err);
+    res.render('settings.ejs', {
+      user: null,
+      islandCount: 0,
+      maxIslands: 20,
+      memoryCount: 0,
+      maxMemories: 500,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: null,
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  }
+});
+
+// Change username
+app.post('/settings/change-username', requiresAuthentication, upload.none(), async (req, res) => {
+  const username = req.session.loggedInUser;
+  const { newUsername } = req.body;
+
+  if (!newUsername || newUsername.trim() === '') {
+    const user = await userdb.findOneAsync({ username: username });
+    return res.render('settings.ejs', {
+      user: user,
+      usernameError: 'Username cannot be empty',
+      usernameSuccess: null,
+      passwordError: null,
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  }
+
+  try {
+    // Check if new username already exists
+    const existingUser = await userdb.findOneAsync({ username: newUsername });
+    if (existingUser && existingUser.username !== username) {
+      const user = await userdb.findOneAsync({ username: username });
+      return res.render('settings.ejs', {
+        user: user,
+        usernameError: 'Username already exists',
+        usernameSuccess: null,
+        passwordError: null,
+        passwordSuccess: null,
+        wordsError: null,
+        wordsSuccess: null
+      });
+    }
+
+    // Update username
+    await userdb.updateAsync(
+      { username: username },
+      { $set: { username: newUsername } }
+    );
+
+    // Update session
+    req.session.loggedInUser = newUsername;
+
+    // Update all references to the old username in islands and memories
+    await islandsdb.updateAsync(
+      { username: username },
+      { $set: { username: newUsername } },
+      { multi: true }
+    );
+
+    await memoriesdb.updateAsync(
+      { username: username },
+      { $set: { username: newUsername } },
+      { multi: true }
+    );
+
+    const user = await userdb.findOneAsync({ username: newUsername });
+    res.render('settings.ejs', {
+      user: user,
+      usernameError: null,
+      usernameSuccess: 'Username updated successfully',
+      passwordError: null,
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  } catch (err) {
+    console.error('Error updating username:', err);
+    const user = await userdb.findOneAsync({ username: username });
+    res.render('settings.ejs', {
+      user: user,
+      usernameError: 'Error updating username',
+      usernameSuccess: null,
+      passwordError: null,
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  }
+});
+
+// Change password
+app.post('/settings/change-password', requiresAuthentication, upload.none(), async (req, res) => {
+  const username = req.session.loggedInUser;
+  const { currentPassword, newPassword, confirmPassword } = req.body;
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    const user = await userdb.findOneAsync({ username: username });
+    return res.render('settings.ejs', {
+      user: user,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: 'All password fields are required',
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  }
+
+  if (newPassword !== confirmPassword) {
+    const user = await userdb.findOneAsync({ username: username });
+    return res.render('settings.ejs', {
+      user: user,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: 'New password and confirm password do not match',
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  }
+
+  try {
+    const user = await userdb.findOneAsync({ username: username });
+    if (!user) {
+      return res.render('settings.ejs', {
+        user: null,
+        usernameError: null,
+        usernameSuccess: null,
+        passwordError: 'User not found',
+        passwordSuccess: null,
+        wordsError: null,
+        wordsSuccess: null
+      });
+    }
+
+    // Verify current password
+    if (!bcrypt.compareSync(currentPassword, user.password)) {
+      return res.render('settings.ejs', {
+        user: user,
+        usernameError: null,
+        usernameSuccess: null,
+        passwordError: 'Current password is incorrect',
+        passwordSuccess: null,
+        wordsError: null,
+        wordsSuccess: null
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    await userdb.updateAsync(
+      { username: username },
+      { $set: { password: hashedPassword } }
+    );
+
+    res.render('settings.ejs', {
+      user: user,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: null,
+      passwordSuccess: 'Password updated successfully',
+      wordsError: null,
+      wordsSuccess: null
+    });
+  } catch (err) {
+    console.error('Error updating password:', err);
+    const user = await userdb.findOneAsync({ username: username });
+    res.render('settings.ejs', {
+      user: user,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: 'Error updating password',
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: null
+    });
+  }
+});
+
+// Change words - split words into two parts
+// Odd length: split in half and delete middle character (e.g., "disgust" 7 chars -> "dis" and "ust", removing "g")
+// Even length: split directly in half (e.g., "this" 4 chars -> "th" and "is")
+function splitWord(word) {
+  if (!word || word.length === 0) return { part1: '', part2: '' };
+  const upperWord = word.toUpperCase();
+  const length = word.length;
+  
+  if (length <= 2) return { part1: upperWord, part2: '' };
+  
+  if (length % 2 === 0) {
+    // Even length: split directly in half
+    const half = length / 2;
+    return {
+      part1: upperWord.substring(0, half),
+      part2: upperWord.substring(half)
+    };
+  } else {
+    // Odd length: take first half, skip middle, take last half
+    const half = Math.floor(length / 2);
+    return {
+      part1: upperWord.substring(0, half),
+      part2: upperWord.substring(half + 1) // Skip middle character
+    };
+  }
+}
+
+// Change words
+app.post('/settings/change-words', requiresAuthentication, upload.none(), async (req, res) => {
+  const username = req.session.loggedInUser;
+  const { wordRed, wordYellow, wordGreen, wordBlue, wordPurple } = req.body;
+
+  try {
+    // Store the full words and their split versions
+    const emotionWords = {
+      red: wordRed || 'ANGER',
+      yellow: wordYellow || 'JOY',
+      green: wordGreen || 'DISGUST',
+      blue: wordBlue || 'SADNESS',
+      purple: wordPurple || 'FEAR'
+    };
+
+    const emotionWordParts = {
+      red: splitWord(wordRed || 'ANGER'),
+      yellow: splitWord(wordYellow || 'JOY'),
+      green: splitWord(wordGreen || 'DISGUST'),
+      blue: splitWord(wordBlue || 'SADNESS'),
+      purple: splitWord(wordPurple || 'FEAR')
+    };
+
+    // Update emotion words
+    await userdb.updateAsync(
+      { username: username },
+      { 
+        $set: { 
+          emotionWords: emotionWords,
+          emotionWordParts: emotionWordParts
+        } 
+      }
+    );
+
+    const user = await userdb.findOneAsync({ username: username });
+    res.render('settings.ejs', {
+      user: user,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: null,
+      passwordSuccess: null,
+      wordsError: null,
+      wordsSuccess: 'Words updated successfully'
+    });
+  } catch (err) {
+    console.error('Error updating words:', err);
+    const user = await userdb.findOneAsync({ username: username });
+    res.render('settings.ejs', {
+      user: user,
+      usernameError: null,
+      usernameSuccess: null,
+      passwordError: null,
+      passwordSuccess: null,
+      wordsError: 'Error updating words',
+      wordsSuccess: null
+    });
+  }
+});
+
+// Feedback page
+app.get('/feedback', requiresAuthentication, (req, res) => {
+  res.render('feedback.ejs', {
+    error: null,
+    success: null,
+    contactEmail: process.env.CONTACT_EMAIL || 'carol@example.com'
+  });
+});
+
+// Submit feedback
+app.post('/feedback/submit', requiresAuthentication, upload.none(), async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.render('feedback.ejs', {
+      error: 'All fields are required',
+      success: null
+    });
+  }
+
+  // Email configuration - using Gmail SMTP
+  // Set these in your .env file:
+  // FEEDBACK_EMAIL=your-email@gmail.com
+  // FEEDBACK_EMAIL_PASSWORD=your-app-password
+  const feedbackEmail = process.env.FEEDBACK_EMAIL || 'your-email@gmail.com';
+  const feedbackEmailPassword = process.env.FEEDBACK_EMAIL_PASSWORD || 'your-app-password';
+
+  try {
+    // Create transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: feedbackEmail,
+        pass: feedbackEmailPassword
+      }
+    });
+
+    // Email content
+    const mailOptions = {
+      from: feedbackEmail,
+      to: feedbackEmail,
+      replyTo: email,
+      subject: `Feedback from ${name} - Palette U`,
+      html: `
+        <h2>New Feedback Submission</h2>
+        <p><strong>From:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Message:</strong></p>
+        <p>${message.replace(/\n/g, '<br>')}</p>
+        <hr>
+        <p><em>You can reply directly to this email to respond to ${name}.</em></p>
+      `,
+      text: `
+New Feedback Submission
+
+From: ${name}
+Email: ${email}
+
+Message:
+${message}
+
+---
+You can reply directly to this email to respond to ${name}.
+      `
+    };
+
+    // Send email
+    await transporter.sendMail(mailOptions);
+
+    res.render('feedback.ejs', {
+      error: null,
+      success: 'Thank you for your feedback! I\'ll get back to you soon.',
+      contactEmail: process.env.CONTACT_EMAIL || 'carol@example.com'
+    });
+  } catch (err) {
+    console.error('Error sending feedback email:', err);
+    res.render('feedback.ejs', {
+      error: 'Sorry, there was an error sending your feedback. Please try again later.',
+      success: null,
+      contactEmail: process.env.CONTACT_EMAIL || 'carol@example.com'
+    });
+  }
 });
 
 app.listen(6002, () => {

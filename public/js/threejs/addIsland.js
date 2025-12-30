@@ -50,7 +50,7 @@ export function disableIslandGlow(islandGroup) {
     })
 }
 
-export const addIsland = (name, scene, position, scale, loadingManager, meshes, type, modelName) => {
+export const addIsland = (name, scene, position, scale, loadingManager, meshes, type, modelName, showText = true) => {
     const islandGroup = new THREE.Group()
     islandGroup.name = name
     islandGroup.userData['groupName'] = 'island'
@@ -66,8 +66,10 @@ export const addIsland = (name, scene, position, scale, loadingManager, meshes, 
     addIslandTop(islandGroup, islandGroup, relativePos, scale, loadingManager, meshes, type)
     addIslandBase(islandGroup, islandGroup, relativePos, scale, loadingManager, meshes)
     // Text positions are relative to island group (0,0,0), not world coordinates
-    addText(islandGroup, name, new THREE.Vector3(0, 1, 2.6))
-    addText(islandGroup, 'ISLAND', new THREE.Vector3(0, 1, 3.2))
+    if (showText) {
+        addText(islandGroup, name, new THREE.Vector3(0, 1, 2.6))
+        addText(islandGroup, 'ISLAND', new THREE.Vector3(0, 1, 3.2))
+    }
     if (modelName && modelName !== 'My') {
         addIslandModel(islandGroup, islandGroup, relativePos, scale, loadingManager, meshes, modelName)
     }

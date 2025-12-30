@@ -16,31 +16,76 @@
     <%- include('components/header-home.ejs') %>
 
         <section id="emotions-section">
+            <% 
+            // Helper function to split word
+            // Odd length: split in half and delete middle character
+            // Even length: split directly in half
+            function splitWord(word) {
+              if (!word || word.length === 0) return { part1: '', part2: '' };
+              const upperWord = word.toUpperCase();
+              const length = word.length;
+              
+              if (length <= 2) return { part1: upperWord, part2: '' };
+              
+              if (length % 2 === 0) {
+                // Even length: split directly in half
+                const half = length / 2;
+                return {
+                  part1: upperWord.substring(0, half),
+                  part2: upperWord.substring(half)
+                };
+              } else {
+                // Odd length: take first half, skip middle, take last half
+                const half = Math.floor(length / 2);
+                return {
+                  part1: upperWord.substring(0, half),
+                  part2: upperWord.substring(half + 1) // Skip middle character
+                };
+              }
+            }
+            
+            // Get emotion word parts or use defaults
+            const redParts = typeof emotionWords !== 'undefined' && emotionWords && emotionWords.red 
+              ? splitWord(emotionWords.red)
+              : { part1: 'AN', part2: 'ER' };
+            const yellowParts = typeof emotionWords !== 'undefined' && emotionWords && emotionWords.yellow
+              ? splitWord(emotionWords.yellow)
+              : { part1: 'J', part2: 'OY' };
+            const greenParts = typeof emotionWords !== 'undefined' && emotionWords && emotionWords.green
+              ? splitWord(emotionWords.green)
+              : { part1: 'DIS', part2: 'UST' };
+            const blueParts = typeof emotionWords !== 'undefined' && emotionWords && emotionWords.blue
+              ? splitWord(emotionWords.blue)
+              : { part1: 'SAD', part2: 'ESS' };
+            const purpleParts = typeof emotionWords !== 'undefined' && emotionWords && emotionWords.purple
+              ? splitWord(emotionWords.purple)
+              : { part1: 'FE', part2: 'AR' };
+            %>
             <a href="/add-memory?emotion=anger" class="hover-red hover-expand">
-                <h1 class="emotion-title">AN</h1>
+                <h1 class="emotion-title"><%= redParts.part1 %></h1>
                 <img src="assets/images/emotion/shape/red.svg" alt="anger" class="emotion-image">
-                <h1 class="emotion-title"> ER</h1>
+                <h1 class="emotion-title"><%= redParts.part2 ? ' ' + redParts.part2 : '' %></h1>
             </a>
 
             <a href="/add-memory?emotion=joy" class="hover-yellow hover-expand">
-                <h1 class="emotion-title">J</h1>
-                <img src="assets/images/emotion/shape/yellow.svg" alt="anger" class="emotion-image">
-                <h1 class="emotion-title">Y</h1>
+                <h1 class="emotion-title"><%= yellowParts.part1 %></h1>
+                <img src="assets/images/emotion/shape/yellow.svg" alt="joy" class="emotion-image">
+                <h1 class="emotion-title"><%= yellowParts.part2 ? yellowParts.part2 : '' %></h1>
             </a>
             <a href="/add-memory?emotion=disgust" class="hover-green hover-expand">
-                <h1 class="emotion-title">DIS</h1>
-                <img src="assets/images/emotion/shape/green.svg" alt="anger" class="emotion-image">
-                <h1 class="emotion-title">UST</h1>
+                <h1 class="emotion-title"><%= greenParts.part1 %></h1>
+                <img src="assets/images/emotion/shape/green.svg" alt="disgust" class="emotion-image">
+                <h1 class="emotion-title"><%= greenParts.part2 ? greenParts.part2 : '' %></h1>
             </a>
             <a href="/add-memory?emotion=sadness" class="hover-blue hover-expand">
-                <h1 class="emotion-title">SAD</h1>
-                <img src="assets/images/emotion/shape/blue.svg" alt="anger" class="emotion-image">
-                <h1 class="emotion-title">ESS</h1>
+                <h1 class="emotion-title"><%= blueParts.part1 %></h1>
+                <img src="assets/images/emotion/shape/blue.svg" alt="sadness" class="emotion-image">
+                <h1 class="emotion-title"><%= blueParts.part2 ? blueParts.part2 : '' %></h1>
             </a>
             <a href="/add-memory?emotion=fear" class="hover-purple hover-expand">
-                <h1 class="emotion-title">FE</h1>
-                <img src="assets/images/emotion/shape/purple.svg" alt="anger" class="emotion-image">
-                <h1 class="emotion-title">AR</h1>
+                <h1 class="emotion-title"><%= purpleParts.part1 %></h1>
+                <img src="assets/images/emotion/shape/purple.svg" alt="fear" class="emotion-image">
+                <h1 class="emotion-title"><%= purpleParts.part2 ? purpleParts.part2 : '' %></h1>
             </a>
         </section>
 
