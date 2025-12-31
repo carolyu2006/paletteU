@@ -412,6 +412,37 @@ app.get('/api/memory/:id', requiresAuthentication, (req, res) => {
   });
 });
 
+app.get('/memory-:id', requiresAuthentication, (req, res) => {
+  const memoryId = req.params.id;
+  const username = req.session.loggedInUser;
+
+  memoriesdb.findOne({ _id: memoryId, username: username }, (err, memory) => {
+    if (err) {
+      console.error('Error fetching memory:', err);
+      return res.redirect('/all-memory');
+    }
+
+    if (!memory) {
+      return res.redirect('/all-memory');
+    }
+
+    // Get islands for this memory
+    let islands = [];
+    if (memory.island && memory.island.length > 0) {
+      islandsdb.find({ _id: { $in: memory.island }, username: username }, (err, userIslands) => {
+        if (err) {
+          console.error('Error fetching islands:', err);
+        } else {
+          islands = userIslands || [];
+        }
+        res.render('individual-memory.ejs', { memory: memory, islands: islands });
+      });
+    } else {
+      res.render('individual-memory.ejs', { memory: memory, islands: [] });
+    }
+  });
+});
+
 app.get('/profile', requiresAuthentication, (req, res) => {
   res.render('profile.ejs', {})
 })
@@ -611,6 +642,124 @@ app.get('/all-islands', requiresAuthentication, async (req, res) => {
   } catch (err) {
     console.error('Error loading islands:', err);
     res.render('all-islands.ejs', { islands: [], allMemories: [] });
+  }
+});
+
+// Edit island page
+app.get('/edit-island/:id', requiresAuthentication, async (req, res) => {
+  const username = req.session.loggedInUser;
+  const islandId = req.params.id;
+  
+  try {
+    const island = await islandsdb.findOneAsync({ _id: islandId, username: username });
+    
+    if (!island) {
+      return res.redirect('/all-islands');
+    }
+    
+    const userMemories = await new Promise((resolve, reject) => {
+      memoriesdb.find({ username }, (err, docs) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(docs || []);
+        }
+      });
+    });
+
+    const allModels = await new Promise((resolve, reject) => {
+      modelsdb.find({}, (err, docs) => {
+        if (err) {
+          console.error('Error loading models:', err);
+          reject(err);
+        } else {
+          resolve(docs || []);
+        }
+      });
+    });
+
+    res.render('edit-island.ejs', {
+      island: island,
+      memories: userMemories,
+      models: allModels
+    });
+
+  } catch (err) {
+    console.error('Error in /edit-island route:', err);
+    res.redirect('/all-islands');
+  }
+});
+
+// Update island
+app.post('/edit-island/:id', requiresAuthentication, upload.none(), async (req, res) => {
+  if (!req.session.loggedInUser) {
+    return res.redirect('/login');
+  }
+
+  const username = req.session.loggedInUser;
+  const islandId = req.params.id;
+
+  try {
+    const island = await islandsdb.findOneAsync({ _id: islandId, username: username });
+    if (!island) {
+      return res.redirect('/all-islands');
+    }
+
+    // Get old memory IDs
+    const oldMemoryIds = island.memories || [];
+
+    // Update island basic info
+    const updatedIsland = {
+      name: req.body.name || '',
+      model: req.body.model || '',
+      color: req.body.color || '1',
+    };
+
+    // Get new memory IDs
+    let newMemoryIds = [];
+    if (req.body.memories) {
+      newMemoryIds = Array.isArray(req.body.memories)
+        ? req.body.memories
+        : [req.body.memories];
+    }
+
+    // Update island with new data
+    await islandsdb.updateAsync(
+      { _id: islandId },
+      { $set: { ...updatedIsland, memories: newMemoryIds } }
+    );
+
+    // Remove island from memories that are no longer associated
+    const removedMemoryIds = oldMemoryIds.filter(id => !newMemoryIds.includes(id));
+    for (const memoryId of removedMemoryIds) {
+      const memory = await memoriesdb.findOneAsync({ _id: memoryId });
+      if (memory && memory.island) {
+        const updatedIslands = memory.island.filter(id => id !== islandId);
+        await memoriesdb.updateAsync(
+          { _id: memoryId },
+          { $set: { island: updatedIslands } }
+        );
+      }
+    }
+
+    // Add island to new memories
+    const addedMemoryIds = newMemoryIds.filter(id => !oldMemoryIds.includes(id));
+    for (const memoryId of addedMemoryIds) {
+      const memory = await memoriesdb.findOneAsync({ _id: memoryId });
+      if (memory) {
+        const updatedIslands = [...(memory.island || []), islandId];
+        await memoriesdb.updateAsync(
+          { _id: memoryId },
+          { $set: { island: updatedIslands } }
+        );
+      }
+    }
+
+    return res.redirect('/all-islands');
+
+  } catch (err) {
+    console.error("Error updating island:", err);
+    res.redirect('/all-islands');
   }
 });
 

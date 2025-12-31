@@ -330,6 +330,10 @@ function raycast() {
 		if (intersects.length > 0) {
 			let object = intersects[0].object
 			while (object) {
+				if (islandFocusMode) {
+					exitFocusMode()
+					break
+				}
 				if (object.userData && object.userData.groupName === 'add') {
 					window.location.href = '/add-island'
 					break
@@ -421,7 +425,7 @@ function raycast() {
 				}
 				hitIslandGroup = currentIslandGroup
 				isHoveringIsland = true
-				enableIslandGlow(currentIslandGroup)
+				// enableIslandGlow(currentIslandGroup)
 			}
 		} else if (!foundIsland && isHoveringIsland && hitIslandGroup) {
 			isHoveringIsland = false
@@ -451,6 +455,12 @@ function raycast() {
 function focusOnIsland(islandGroup) {
 	islandFocusMode = true
 	focusedIsland = islandGroup
+	
+	// Store focused island name for add-memory button
+	const islandName = islandGroup.userData?.islandData?.name || islandGroup.name
+	if (typeof window !== 'undefined') {
+		window.focusedIslandName = islandName
+	}
 
 	controls.enabled = false
 
@@ -530,7 +540,7 @@ function focusOnIsland(islandGroup) {
 	})
 
 	gsap.to(controls.target, {
-		x: islandWorldPosition.x,
+		x: islandWorldPosition.x+5.5,
 		y: islandWorldPosition.y,
 		z: islandWorldPosition.z,
 		duration: 1,
@@ -541,6 +551,15 @@ function focusOnIsland(islandGroup) {
 	})
 
 	displayFocusedIslandMemories(focusedIsland)
+
+	// Hide header and show add-memory footer when in focus mode
+	const headerContainer = document.getElementById('island-header-container')
+	const footerAddIsland = document.getElementById('footer-add-island-container')
+	const footerAddMemory = document.getElementById('footer-add-memory-container')
+	
+	if (headerContainer) headerContainer.style.display = 'none'
+	if (footerAddIsland) footerAddIsland.style.display = 'none'
+	if (footerAddMemory) footerAddMemory.style.display = 'block'
 
 	// Scale up the focused island slightly
 	// gsap.to(focusedIsland.scale, {
@@ -560,6 +579,11 @@ async function displayFocusedIslandMemories(islandGroup) {
 	const islandData = islandGroup.userData.islandData
 	if (!islandData || !islandData.memories || islandData.memories.length === 0) {
 		console.log('No memories found for this island')
+		// Hide the panel if no memories
+		const panel = document.getElementById('island-memories-panel')
+		if (panel) {
+			panel.style.display = 'none'
+		}
 		return
 	}
 
@@ -582,24 +606,33 @@ async function displayFocusedIslandMemories(islandGroup) {
 
 	if (validMemories.length === 0) {
 		console.log('No valid memories found')
+		// Hide the panel if no valid memories
+		const panel = document.getElementById('island-memories-panel')
+		if (panel) {
+			panel.style.display = 'none'
+		}
 		return
 	}
+
+	// Display memories in HTML panel with 1 second delay
+	setTimeout(() => {
+		displayMemoriesInPanel(validMemories, islandData.name)
+	}, 500)
 
 	// Create memory group to hold all memory objects
 	const memoryGroup = new THREE.Group()
 	memoryGroup.name = 'islandMemories'
 	scene.add(memoryGroup)
 
-	// Position memories in a line behind the island
-	const memoryCount = validMemories.length
-	const lineDistance = 5 // Distance behind island
-	const lineLength = (memoryCount - 1) * 4 // Total length of the line (4 units spacing between memories)
-	const startX = islandWorldPosition.x - lineLength / 2 // Start position of the line
-
 	validMemories.forEach((memory, index) => {
-		const x = startX + (index * 4)
-		const z = islandWorldPosition.z - lineDistance
-		const y = islandWorldPosition.y + 2
+		// const radius = 3 + Math.random() * 2
+		const radius = 3
+
+		const angle = Math.random() * Math.PI * 2
+		
+		const x = islandWorldPosition.x + Math.cos(angle) * radius
+		const z = islandWorldPosition.z + Math.sin(angle) * radius
+		const y = 0.2
 
 		const memoryObject = createMemoryObject(memory, new THREE.Vector3(x, y, z))
 		if (memoryObject) {
@@ -631,6 +664,65 @@ async function displayFocusedIslandMemories(islandGroup) {
 	})
 }
 
+function displayMemoriesInPanel(memories, islandName) {
+	const panel = document.getElementById('island-memories-panel')
+	const container = document.getElementById('island-memories-container')
+	const title = document.getElementById('island-memories-title')
+	
+	if (!panel || !container) return
+	
+	// Update title with island name
+	if (title && islandName) {
+		title.textContent = `${islandName.toUpperCase()} MEMORIES`
+	}
+	
+	// Clear existing content
+	container.innerHTML = ''
+	
+	// Create memory items
+	memories.forEach(memory => {
+		const memoryItem = document.createElement('div')
+		memoryItem.className = 'island-memory-item'
+		
+		// Add emotion background class
+		if (memory.emotion) {
+			memoryItem.classList.add(`bg-${memory.emotion}`)
+		}
+		
+		// Add click handler to navigate to memory page
+		memoryItem.addEventListener('click', () => {
+			window.location.href = `/memory-${memory._id || memory.id}`
+		})
+		
+		let html = ''
+		
+		// Add image if available
+		if (memory.imgSrc && memory.imgSrc.length > 0) {
+			const imgSrc = Array.isArray(memory.imgSrc) ? memory.imgSrc[0] : memory.imgSrc
+			html += `<img src="${imgSrc}" alt="memory" class="island-memory-image">`
+		}
+		
+		// Add date
+		if (memory.date) {
+			html += `<p class="island-memory-date">${memory.date}</p>`
+		}
+		
+		// Add title
+		html += `<p class="island-memory-title">${memory.title || 'Untitled'}</p>`
+		
+		// Add description
+		if (memory.description) {
+			html += `<p class="island-memory-description">${memory.description}</p>`
+		}
+		
+		memoryItem.innerHTML = html
+		container.appendChild(memoryItem)
+	})
+	
+	// Show the panel
+	panel.style.display = 'block'
+}
+
 function createMemoryObject(memory, position) {
 	const memoryGroup = new THREE.Group()
 	memoryGroup.position.copy(position)
@@ -646,41 +738,20 @@ function createMemoryObject(memory, position) {
 
 	const emotionColor = emotionColors[memory.emotion] || 0xffffff
 
-	// Create a plane for the memory
-	const planeSize = 3
-	const planeGeometry = new THREE.PlaneGeometry(planeSize, planeSize)
-	createColoredMemoryPlane(memoryGroup, planeGeometry, emotionColor)
-
-	const glowGeometry = new THREE.PlaneGeometry(planeSize * 1.2, planeSize * 1.2)
-	const glowMaterial = new THREE.MeshBasicMaterial({
+	const sphereRadius = 0.3 
+	
+	const sphereGeometry = new THREE.SphereGeometry(sphereRadius, 32, 32)
+	const sphereMaterial = new THREE.MeshStandardMaterial({
 		color: emotionColor,
-		transparent: true,
-		opacity: 0.3,
-		side: THREE.DoubleSide
+		emissive: new THREE.Color(emotionColor),
+		emissiveIntensity: 0.3,
+		metalness: 0.3,
+		roughness: 0.3
 	})
-	const glow = new THREE.Mesh(glowGeometry, glowMaterial)
-	glow.rotation.y = Math.PI
-	glow.position.z = -0.01
-	memoryGroup.add(glow)
+	const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial)
+	// memoryGroup.add(sphere)
 
-	if (memory.title) {
-		// Create a simple text representation using a sprite or geometry
-		// For now, we'll just use the colored plane
-	}
-
-	return memoryGroup
-}
-
-function createColoredMemoryPlane(parent, geometry, color) {
-	const material = new THREE.MeshStandardMaterial({
-		color: color,
-		side: THREE.DoubleSide,
-		emissive: new THREE.Color(color),
-		emissiveIntensity: 0.3
-	})
-	const plane = new THREE.Mesh(geometry, material)
-	plane.rotation.y = Math.PI
-	parent.add(plane)
+	// return memoryGroup
 } 
 
 function clearDisplayedMemories() {
@@ -726,6 +797,21 @@ function exitFocusMode() {
 	// Clear displayed memories
 	clearDisplayedMemories()
 
+	// Hide the memories panel
+	const panel = document.getElementById('island-memories-panel')
+	if (panel) {
+		panel.style.display = 'none'
+	}
+
+	// Show header and hide add-memory footer when exiting focus mode
+	const headerContainer = document.getElementById('island-header-container')
+	const footerAddIsland = document.getElementById('footer-add-island-container')
+	const footerAddMemory = document.getElementById('footer-add-memory-container')
+	
+	if (headerContainer) headerContainer.style.display = 'block'
+	if (footerAddIsland) footerAddIsland.style.display = 'block'
+	if (footerAddMemory) footerAddMemory.style.display = 'none'
+
 	// Restore camera position
 	gsap.to(camera.position, {
 		x: originalCameraPosition.x,
@@ -761,6 +847,11 @@ function exitFocusMode() {
 	})
 
 	focusedIsland = null
+	
+	// Clear focused island name
+	if (typeof window !== 'undefined') {
+		window.focusedIslandName = null
+	}
 }
 
 function setupScrollNavigation() {

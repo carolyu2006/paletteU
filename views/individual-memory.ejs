@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PALETTE U</title>
+  <link rel="icon" href="assets/images/logo-transparent.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/individual-memory.css">
+  <script src="js/script.js"></script>
+</head>
+
+<body>
+  <div class="memory-view-container">
+    <div class="memory-card <%= "bg-"+memory.emotion %>">
+      <div class="memory-image-container">
+        <% if (memory.imgSrc && memory.imgSrc.length > 0) { %>
+          <% const images = Array.isArray(memory.imgSrc) ? memory.imgSrc : [memory.imgSrc]; %>
+          <div class="image-carousel" id="image-carousel">
+            <% images.forEach((imgSrc, index) => { %>
+              <div class="carousel-image <%= index === 0 ? 'active' : '' %>" data-index="<%= index %>">
+                <img src="<%= imgSrc %>" alt="memory image">
+              </div>
+            <% }); %>
+          </div>
+          <% if (images.length > 1) { %>
+            <button class="carousel-nav carousel-prev" id="carousel-prev" onclick="changeImage(-1)">‹</button>
+            <button class="carousel-nav carousel-next" id="carousel-next" onclick="changeImage(1)">›</button>
+            <div class="carousel-indicators">
+              <% images.forEach((imgSrc, index) => { %>
+                <span class="indicator <%= index === 0 ? 'active' : '' %>" onclick="goToImage(<%= index %>)"></span>
+              <% }); %>
+            </div>
+          <% } %>
+        <% } %>
+      </div>
+      
+      <div class="memory-content">
+        <% if (memory.date) { %>
+          <p class="memo-date"><%= memory.date %></p>
+        <% } %>
+        
+        <% if (memory.title) { %>
+          <p class="memo-title"><%= memory.title %></p>
+        <% } %>
+        
+        <% if (memory.description) { %>
+          <p class="memo-description"><%= memory.description %></p>
+        <% } %>
+        
+        <% if (memory.island && memory.island.length > 0 && islands.length > 0) { %>
+          <div class="memo-island-container">
+            <% islands.forEach((island, index) => { %>
+              <p class="memo-island">#<%= island.name %></p>
+              <% if (index < islands.length - 1) { %>
+                <span>/</span>
+              <% } %>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+      
+      <button class="close-button" onclick="window.location.href='/all-memory'">×</button>
+    </div>
+  </div>
+
+  <script>
+    let currentImageIndex = 0;
+    const images = document.querySelectorAll('.carousel-image');
+    const totalImages = images.length;
+
+    function changeImage(direction) {
+      if (totalImages <= 1) return;
+      
+      images[currentImageIndex].classList.remove('active');
+      document.querySelectorAll('.indicator')[currentImageIndex].classList.remove('active');
+      
+      currentImageIndex += direction;
+      
+      if (currentImageIndex < 0) {
+        currentImageIndex = totalImages - 1;
+      } else if (currentImageIndex >= totalImages) {
+        currentImageIndex = 0;
+      }
+      
+      images[currentImageIndex].classList.add('active');
+      document.querySelectorAll('.indicator')[currentImageIndex].classList.add('active');
+    }
+
+    function goToImage(index) {
+      if (totalImages <= 1) return;
+      
+      images[currentImageIndex].classList.remove('active');
+      document.querySelectorAll('.indicator')[currentImageIndex].classList.remove('active');
+      
+      currentImageIndex = index;
+      
+      images[currentImageIndex].classList.add('active');
+      document.querySelectorAll('.indicator')[currentImageIndex].classList.add('active');
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        changeImage(-1);
+      } else if (e.key === 'ArrowRight') {
+        changeImage(1);
+      } else if (e.key === 'Escape') {
+        window.location.href = '/all-memory';
+      }
+    });
+  </script>
+</body>
+
+</html>
+

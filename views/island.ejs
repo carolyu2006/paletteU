@@ -21,7 +21,9 @@
 </head>
 
 <body>
-  <%- include('components/header.ejs') %>
+  <div id="island-header-container">
+    <%- include('components/header-island.ejs') %>
+  </div>
 
   <div id="loading-screen">
     <div class="loading-content">
@@ -30,6 +32,24 @@
     </div>
   </div>
   <div id="app"></div>
+  
+  <!-- Island Memories Display (shown in focus mode) -->
+  <div id="island-memories-panel" class="island-memories-panel" style="display: none;">
+    <div class="island-memories-header">
+      <h2 id="island-memories-title">ISLAND MEMORIES</h2>
+    </div>
+    <div id="island-memories-container" class="island-memories-container">
+      <!-- Memories will be populated here -->
+    </div>
+  </div>
+  
+  <div id="footer-add-island-container">
+    <%- include('components/footer-add-island.ejs') %>
+  </div>
+  <div id="footer-add-memory-container" style="display: none;">
+    <%- include('components/footer-add-memory.ejs') %>
+  </div>
+  
   <script>
     window.userIslands = <%- JSON.stringify(islands || []) %>;
   </script>

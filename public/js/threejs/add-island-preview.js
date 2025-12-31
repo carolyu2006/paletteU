@@ -46,10 +46,10 @@ export function initIslandPreview(containerId) {
     controls.target.set(0, 0, 0)
 
     // Lighting
-    const lightWhite = new THREE.DirectionalLight(0xffffff, 2.5)
+    const lightWhite = new THREE.DirectionalLight(0xffffff, 2.2)
     lightWhite.position.set(1, 10, 5)
     scene.add(lightWhite)
-    const lightYellow = new THREE.DirectionalLight(0xFFBCAF, 2)
+    const lightYellow = new THREE.DirectionalLight(0xFFBFBF, 2.4)
     lightYellow.position.set(-10, 6, 0)
     scene.add(lightYellow)
 

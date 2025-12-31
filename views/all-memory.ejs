@@ -15,43 +15,48 @@
         <section class="memo-display">
             <h1>ALL MEMO</h1>
 
-            <div class="all-memo-container">
-                <% for(let memory of memories) { %>
+            <% if (!memories || memories.length === 0) { %>
+                <p class="no-memories">No memories yet. Add a memory first!</p>
+            <% } else { %>
+                <div class="all-memo-container">
+                    <% for(let memory of memories) { %>
 
-                    <button onclick="window.location.href='/memory-<%= memory.id %>'" class="memo-link">
-                        <div class="memo-item <%= "bg-"+memory.emotion%>">
-                            <% if (memory.imgSrc && memory.imgSrc.length> 0) { %>
-                                <img src="<%= Array.isArray(memory.imgSrc) ? memory.imgSrc[0] : memory.imgSrc %>" alt="image"
-                                    class="memo-image">
-                            <% } %>
+                        <button onclick="window.location.href='/memory-<%= memory.id %>'" class="memo-link">
+                            <div class="memo-item <%= "bg-"+memory.emotion%>">
+                                <% if (memory.imgSrc && memory.imgSrc.length> 0) { %>
+                                    <img src="<%= Array.isArray(memory.imgSrc) ? memory.imgSrc[0] : memory.imgSrc %>" alt="image"
+                                        class="memo-image">
+                                <% } %>
 
-                            <p class="memo-date">
-                                <%= memory.date %>
-                            </p>
-                            <p class="memo-title">
-                                <%= memory.title %>
-                            </p>
-                            <p class="memo-description">
-                                <%= memory.description %>
-                            </p>
-                            <div class="memo-island-container">
-                                <% if (memory.island && memory.island.length > 0) { %>
-                                    <% for (let islandId of memory.island) { %>
-                                        <% let thisIsland = islands.find(island => island._id === islandId) %>
-                                        <% if (thisIsland) { %>
-                                            <p class="memo-island">
-                                                <%= "#"+thisIsland.name %>
-                                            </p>
+                                <p class="memo-date">
+                                    <%= memory.date %>
+                                </p>
+                                <p class="memo-title">
+                                    <%= memory.title %>
+                                </p>
+                                <p class="memo-description">
+                                    <%= memory.description %>
+                                </p>
+                                <div class="memo-island-container">
+                                    <% if (memory.island && memory.island.length > 0) { %>
+                                        <% for (let islandId of memory.island) { %>
+                                            <% let thisIsland = islands.find(island => island._id === islandId) %>
+                                            <% if (thisIsland) { %>
+                                                <p class="memo-island">
+                                                    <%= "#"+thisIsland.name %>
+                                                </p>
+                                            <% } %>
                                         <% } %>
-                                    <% } %>
-                                <% } %>       
-                            </div>                     
-                        </div>
-                    </button>
-                <% } %>
-            </div>
+                                    <% } %>       
+                                </div>                     
+                            </div>
+                        </button>
+                    <% } %>
+                </div>
+            <% } %>
 
         </section>
+        <%- include('components/footer-add-memory.ejs') %>
 
 </body>
 

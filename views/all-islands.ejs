@@ -26,7 +26,7 @@
   <h1>ALL ISLANDS</h1>
 
     <% if (islands.length === 0) { %>
-      <p class="no-islands">No islands yet. <a href="/add-island">Create your first island</a></p>
+      <p class="no-islands">No islands yet. Add an island first!</p>
     <% } else { %>
       <div id="islands-canvas-container" class="islands-canvas-container"></div>
     <% } %>
@@ -69,6 +69,7 @@
       </div>
     </div>
   </div>
+  <%- include('components/footer-add-island.ejs') %>
 
   <script>
     // Pass islands data to Three.js

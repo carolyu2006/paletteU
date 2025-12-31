@@ -51,7 +51,7 @@ function toggleMenu() {
         
         menu.innerHTML = `
         <div class="dropdown-menu-content">
-            <div class="dropdown-menu-content-top">
+            <div class="dropdown-menu-content-normal">
                 <button class="dropdown-menu-content-item" onclick="window.location.href='/all-islands'">
                     <img src="assets/icons/dropdown/islands.svg" alt="menu" class="menu">
                     <p>Islands</p>
@@ -60,8 +60,6 @@ function toggleMenu() {
                     <img src="assets/icons/dropdown/setting.svg" alt="menu" class="menu">
                     <p>Setting</p>
                 </button>
-            </div>
-            <div class="dropdown-menu-content-bottom">
                 <button class="dropdown-menu-content-item" onclick="window.location.href='/feedback'">
                     <img src="assets/icons/dropdown/feedback.svg" alt="menu" class="menu">
                     <p>Feedback</p>
@@ -75,7 +73,6 @@ function toggleMenu() {
         `;
         document.body.appendChild(menu);
 
-        // Close menu when clicking outside
         document.addEventListener('click', function (event) {
             if (!event.target.closest('.menu-button') && !event.target.closest('.dropdown-menu')) {
                 menu.classList.remove('active');

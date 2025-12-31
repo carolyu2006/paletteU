@@ -36,7 +36,7 @@ function addAdd(scene, position, scale, loadingManager, meshes, mixers) {
 function addLandMain(scene, position, scale, loadingManager, meshes, mixers) {
 	const landMain = new Model({
 		name: 'landMain',
-		url: '/threejs/mainLand2.glb',
+		url: '/threejs/landmain.glb',
 		scene: scene,
 		meshes: meshes,
 		animationState: false,

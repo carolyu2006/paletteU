@@ -415,6 +415,8 @@ body.scrolling::-webkit-scrollbar-thumb {
     gap: 0;
 }
 
+
+.dropdown-menu-content-normal, 
 .dropdown-menu-content-top,
 .dropdown-menu-content-bottom {
     width: 160px;
@@ -513,4 +515,33 @@ body.scrolling::-webkit-scrollbar-thumb {
 .bg-purple {
     background-color: var(--color-purple) !important;
     color: var(--color-black);
+}
+
+/* Fixed Add Button */
+.add-button-fixed {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--color-white);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.add-button-fixed:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.add-button-fixed .add-icon {
+    width: 25px;
+    height: 25px;
+    filter: brightness(0);
 }

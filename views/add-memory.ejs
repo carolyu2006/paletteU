@@ -94,11 +94,13 @@
                         <div class="add-memory-item">
                             <small>ISLAND</small>
                             <div class="memory-info island-options">
-                                <% for (let island of islands) { %>
+                                <% islands.forEach((island, index) => { %>
                                     <input type="checkbox" id="<%= island.name %>" name="island" value="<%= island.name %>" style="display: none;">
                                     <label for="<%= island.name %>" class="toggle-button"><%= island.name %></label>
-                                    <span>/</span>
-                                <% } %>
+                                    <% if (index < islands.length - 1) { %>
+                                        <span>/</span>
+                                    <% } %>
+                                <% }); %>
                             </div>
                         </div>
                     </div>

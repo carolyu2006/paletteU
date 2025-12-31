@@ -1,0 +1,13 @@
+<button class="add-button-fixed hover-rotate" onclick="handleAddMemoryClick()">
+    <img src="/assets/icons/add.svg" alt="add-icon" class="add-icon">
+</button>
+<script>
+function handleAddMemoryClick() {
+    const focusedIslandName = window.focusedIslandName;
+    let url = '/add-memory';
+    if (focusedIslandName) {
+        url += '?island=' + encodeURIComponent(focusedIslandName);
+    }
+    window.location.href = url;
+}
+</script>

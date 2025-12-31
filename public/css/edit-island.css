@@ -1,0 +1,9 @@
+/* Edit Island Page Styles */
+/* This file extends add-island.css with edit-specific styles */
+
+/* Edit island page uses the same styles as add-island page */
+/* Additional edit-specific styles can be added here if needed */
+
+#model-input {
+    display: none;
+}

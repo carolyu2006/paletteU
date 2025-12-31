@@ -9,6 +9,18 @@ window.onload = async () => {
     // Clear the accumulated images array
     allImages.length = 0;
 
+    // Auto-select island from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const islandFromUrl = urlParams.get('island');
+    if (islandFromUrl) {
+        const islandCheckbox = document.getElementById(islandFromUrl);
+        if (islandCheckbox) {
+            islandCheckbox.checked = true;
+            // Trigger change event to update preview
+            islandCheckbox.dispatchEvent(new Event('change'));
+        }
+    }
+
     const imageInput = document.getElementById('image-input');
     displayImagePreviews();
 
@@ -187,19 +199,18 @@ function updateMemoryPreview() {
     // Update emotion background color
     preview.className = 'memo-item-preview';
     if (emotion) {
+        preview.classList.remove('bg-red', 'bg-yellow', 'bg-green', 'bg-blue', 'bg-purple');
+        previewCircle.classList.remove('bg-red', 'bg-yellow', 'bg-green', 'bg-blue', 'bg-purple');
         preview.classList.add(`bg-${emotion}`);
         previewCircle.classList.add(`bg-${emotion}`);
     } else {
-        // Remove all emotion classes if none selected
         preview.classList.remove('bg-red', 'bg-yellow', 'bg-green', 'bg-blue', 'bg-purple');
-        previewCircle.classList.remove('bg-red', 'bg-yellow', 'bg-green', 'bg-blue', 'bg-purple');
+        previewCircle.classList.remove('bg-red', 'bg-yellow', 'bg-green', 'bg-blue', 'bg-purple')
     }
 
-    // Update image preview - use first image from allImages array
     previewImageContainer.innerHTML = '';
 
     if (allImages && allImages.length > 0) {
-        // Only process the first file for preview
         const file = allImages[0];
         if (file && file.type.startsWith('image/')) {
             // Check if we're already processing this file to avoid duplicates
@@ -330,19 +341,29 @@ function validateForm() {
             dateValid = false;
         }
     }
-    
+
     // Check if either photo is uploaded or content is filled
     const titleInput = document.getElementById('title-input');
     const descriptionInput = document.getElementById('description-input');
+    const imageInput = document.getElementById('image-input');
 
-    const hasImage = allImages.length > 0;
+    // Check both allImages array and the file input
+    const hasImageInArray = Array.isArray(allImages) && allImages.length > 0;
+    const hasImageInInput = imageInput && imageInput.files && imageInput.files.length > 0;
+    const hasImage = hasImageInArray || hasImageInInput;
+    
     const hasContent = descriptionInput && descriptionInput.value.trim().length > 0;
     const hasTitle = titleInput && titleInput.value.trim().length > 0;
     console.log('dateValid', dateValid);
     console.log('emotionSelected', emotionSelected);
     console.log('hasImage', hasImage);
+    // console.log('hasImageInArray', hasImageInArray);
+    // console.log('hasImageInInput', hasImageInInput);
+    // console.log('allImages.length', allImages ? allImages.length : 'allImages is null/undefined');
+    console.log('allImages', allImages);
     console.log('hasContent', hasContent);
     console.log('hasTitle', hasTitle);
+
     return emotionSelected && dateValid && (hasImage || hasContent || hasTitle);
 }
 

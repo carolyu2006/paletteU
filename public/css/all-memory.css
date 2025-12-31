@@ -47,3 +47,11 @@ section {
         column-count: 2;
     }
 }
+
+.no-memories {
+    text-align: center;
+    color: var(--color-gray);
+    padding: 40px;
+    font-size: 14px;
+    letter-spacing: 2px;
+}

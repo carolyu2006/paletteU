@@ -18,15 +18,15 @@ function createIslandPreview(container, islandData) {
     }
 
     const scene = new THREE.Scene()
-    // scene.background = new THREE.Color(0x1E1E1E)
+    scene.background = new THREE.Color(0x1E1E1E)
 
     // Camera - same settings as add-island-preview
     const camera = new THREE.PerspectiveCamera(34, container.clientWidth / container.clientHeight, 0.1, 1000)
     camera.position.set(-2, 7, 8)
     camera.lookAt(0, 0, 0)
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    // Renderer - same as add-island-preview
+    const renderer = new THREE.WebGLRenderer({ antialias: true })
     renderer.setSize(container.clientWidth, container.clientHeight)
     container.appendChild(renderer.domElement)
 
@@ -42,10 +42,13 @@ function createIslandPreview(container, islandData) {
     const lightWhite = new THREE.DirectionalLight(0xffffff, 2.5)
     lightWhite.position.set(1, 10, 5)
     scene.add(lightWhite)
+    const lightYellow = new THREE.DirectionalLight(0xFFBCAF, 2)
+    lightYellow.position.set(-10, 6, 0)
+    scene.add(lightYellow)
 
     // Add default meshes
-    const defaultMeshes = addDefaultMeshes({ xPos: 0, yPos: -0.8, zPos: 0 })
-    scene.add(defaultMeshes)
+    // const defaultMeshes = addDefaultMeshes({ xPos: 0, yPos: -0.8, zPos: 0 })
+    // scene.add(defaultMeshes)
 
     // Add island
     const position = new THREE.Vector3(0, 0, 0)
@@ -134,9 +137,10 @@ function createIslandPreview(container, islandData) {
 }
 
 function openEditModal(islandData) {
-    // Dispatch custom event to open modal
-    const event = new CustomEvent('openIslandEdit', { detail: islandData })
-    window.dispatchEvent(event)
+    // Navigate to edit island page
+    if (islandData && islandData._id) {
+        window.location.href = `/edit-island/${islandData._id}`;
+    }
 }
 
 // Initialize when DOM is ready

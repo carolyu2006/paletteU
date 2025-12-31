@@ -1,5 +1,13 @@
-<header style="background-color: transparent;">
-    <button onclick="window.location.href='/'">
-        <img src="assets/icons/logo-white.svg" alt="back" class="logo-white">
-    </button>
-</header>
+    <div class="header-container-top">
+        <div class="island-button-wrapper" id="island-button-wrapper">
+            <button onclick="window.location.href='/'" class="menu-button" id="island-button">
+                <img src="assets/icons/paletteIcon.svg" alt="back" class="menu">
+            </button>
+            <button class="menu-button add-island-button" id="add-island-button" style="display: none;">
+                <img src="assets/icons/indexAddIsland.svg" alt="add" class="menu">
+            </button>
+        </div>
+        <button class="menu-button" onclick="toggleMenu()">
+            <img src="assets/icons/profileIcon.svg" alt="menu" class="menu">
+        </button>
+    </div>

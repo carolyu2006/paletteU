@@ -65,3 +65,90 @@ canvas.loaded {
 	background-color: var(--color-black);
 	letter-spacing: 10px;
 }
+
+/* Island Memories Panel */
+.island-memories-panel {
+	position: fixed;
+	top: 0;
+	right: 20px;
+	max-width: 700px;
+	width: 70%;
+	height: 100vh;
+	padding: 120px 30px 30px 30px;
+	overflow-y: auto;
+	z-index: 5;
+}
+
+.island-memories-header {
+	margin-bottom: 30px;
+}
+
+.island-memories-header h2 {
+	font-family: 'NicoMoji', sans-serif;
+	font-size: 28px;
+	color: var(--color-white);
+	letter-spacing: 8px;
+	margin: 0;
+}
+
+.island-memories-container {
+	column-count: 2;
+	column-gap: 20px;
+}
+
+.island-memory-item {
+	width: 100%;
+	background-color: var(--color-white);
+	padding: 15px;
+	margin-bottom: 20px;
+	break-inside: avoid;
+	page-break-inside: avoid;
+	display: flex;
+	flex-direction: column;
+	align-items: left;
+	justify-content: left;
+	text-align: left;
+	color: var(--color-black);
+	cursor: pointer;
+	transition: transform 0.2s ease;
+}
+
+.island-memory-item:hover {
+	transform: translateY(-2px);
+}
+
+.island-memory-image {
+	width: 100%;
+	margin-bottom: 15px;
+}
+
+.island-memory-date {
+	font-size: 12px;
+	letter-spacing: 2px;
+	margin-bottom: 15px;
+	color: var(--color-black);
+}
+
+.island-memory-title {
+	font-size: 21px;
+	color: var(--color-black);
+	letter-spacing: 4px;
+	margin-bottom: 10px;
+}
+
+.island-memory-description {
+	font-size: 14px;
+	letter-spacing: 2px;
+	margin-bottom: 15px;
+	color: var(--color-black);
+}
+
+@media (max-width: 1024px) {
+	.island-memories-panel {
+		width: 350px;
+	}
+	
+	.island-memories-container {
+		column-count: 1;
+	}
+}
