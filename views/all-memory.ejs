@@ -7,13 +7,21 @@
     <link rel="stylesheet" href="css/all-memory.css">
     <link rel="stylesheet" href="css/individual-memory.css">
     <script src="js/script.js"></script>
+    <script>
+        // Navigate to memory page normally - will be cleaned up when closing
+        function navigateToMemory(memoryId) {
+            const memoryUrl = '/memory-' + memoryId;
+            window.location.href = memoryUrl;
+        }
+        window.navigateToMemory = navigateToMemory;
+    </script>
 </head>
 
 <body>
     <%- include('components/header.ejs') %>
 
         <section class="memo-display">
-            <h1>ALL MEMO</h1>
+            <h1>ALL MEMORIES</h1>
 
             <% if (!memories || memories.length === 0) { %>
                 <p class="no-memories">No memories yet. Add a memory first!</p>
@@ -21,7 +29,7 @@
                 <div class="all-memo-container">
                     <% for(let memory of memories) { %>
 
-                        <button onclick="window.location.href='/memory-<%= memory.id %>'" class="memo-link">
+                        <button onclick="navigateToMemory('<%= memory._id %>')" class="memo-link">
                             <div class="memo-item <%= "bg-"+memory.emotion%>">
                                 <% if (memory.imgSrc && memory.imgSrc.length> 0) { %>
                                     <img src="<%= Array.isArray(memory.imgSrc) ? memory.imgSrc[0] : memory.imgSrc %>" alt="image"

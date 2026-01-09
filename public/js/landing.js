@@ -7,16 +7,16 @@ window.onload = async () => {
     let targetSection = null;
     let isClosing = false;
 
-    shapes.forEach(shape => {
-        shape.addEventListener('mouseenter', () => {
-            if (activeShape && activeShape !== shape) {
-                closeShape(activeShape);
-            }
-            if (!activeShape) {
-                openShape(shape);
-            }
-        });
-    });
+    // shapes.forEach(shape => {
+    //     shape.addEventListener('mouseenter', () => {
+    //         if (activeShape && activeShape !== shape) {
+    //             closeShape(activeShape);
+    //         }
+    //         if (!activeShape) {
+    //             openShape(shape);
+    //         }
+    //     });
+    // });
 
     function openShape(shape) {
         // console.log('is closing: ', isClosing);

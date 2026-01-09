@@ -707,8 +707,10 @@ function displayMemoriesInPanel(memories, islandName) {
 			html += `<p class="island-memory-date">${memory.date}</p>`
 		}
 		
-		// Add title
-		html += `<p class="island-memory-title">${memory.title || 'Untitled'}</p>`
+		// Add title only if it exists
+		if (memory.title) {
+			html += `<p class="island-memory-title">${memory.title}</p>`
+		}
 		
 		// Add description
 		if (memory.description) {

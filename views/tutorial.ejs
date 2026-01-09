@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PALETTE U - Color Tutorial</title>
+  <link rel="icon" href="/assets/images/logo-transparent.png">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/settings.css">
+</head>
+
+<body>
+  <!-- <%- include('components/header.ejs') %> -->
+
+  <div class="main-body">
+    <h1>WELCOME</h1>
+    <p class="subtitle">Before you start, tell me what kind of memory each color means to you. You can always change this later in Settings.</p>
+
+    <div class="settings-container">
+      <div class="settings-section">
+        <h2>FOR YOU, </h2>
+
+        <form action="/tutorial" method="post" class="settings-form">
+          <div class="emotion-words-grid">
+            <%
+              const existing = user && user.emotionWords ? user.emotionWords : {};
+              const redWord = existing.red || 'ANGER';
+              const yellowWord = existing.yellow || 'JOY';
+              const greenWord = existing.green || 'DISGUST';
+              const blueWord = existing.blue || 'SADNESS';
+              const purpleWord = existing.purple || 'FEAR';
+            %>
+
+            <div class="form-group">
+              <label>RED is...</label>
+              <div class="setting-content">
+                <img src="/assets/images/emotion/shape/red.svg" alt="red" class="emotion-shape-icon">
+                <input type="text" name="wordRed" value="<%= redWord %>" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>YELLOW is... </label>
+              <div class="setting-content">
+                <img src="/assets/images/emotion/shape/yellow.svg" alt="yellow" class="emotion-shape-icon">
+                <input type="text" name="wordYellow" value="<%= yellowWord %>" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>GREEN is...</label>
+              <div class="setting-content">
+                <img src="/assets/images/emotion/shape/green.svg" alt="green" class="emotion-shape-icon">
+                <input type="text" name="wordGreen" value="<%= greenWord %>" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>BLUE</label>
+              <div class="setting-content">
+                <img src="/assets/images/emotion/shape/blue.svg" alt="blue" class="emotion-shape-icon">
+                <input type="text" name="wordBlue" value="<%= blueWord %>" class="form-input" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>PURPLE</label>
+              <div class="setting-content">
+                <img src="/assets/images/emotion/shape/purple.svg" alt="purple" class="emotion-shape-icon">
+                <input type="text" name="wordPurple" value="<%= purpleWord %>" class="form-input" />
+              </div>
+            </div>
+          </div>
+
+          <div class="" style="margin-top: 24px;">
+            <button type="submit" class="submit-btn">SAVE & CONTINUE</button>
+          </div>
+        </form>
+
+        <form action="/tutorial" method="post" class="settings-form" style="margin-top: 12px; text-align: left;">
+          <input type="hidden" name="skip" value="true" />
+          <button type="submit" class="settings-link" style="background: none; border: none; padding: 0; cursor: pointer; margin-top: 12px; color: var(--color-gray); text-decoration: underline; text-align: left;">
+            SKIP FOR NOW
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+
+

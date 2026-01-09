@@ -1,4 +1,5 @@
 const allImages = [];
+let lastPreviewImageKey = null;
 
 window.onload = async () => {
     const form = document.querySelector('form');
@@ -134,15 +135,44 @@ window.onload = async () => {
             // Submit via fetch instead of regular form submission
             fetch('/add-memory', {
                 method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
                 body: formData
             })
-                .then(response => {
+                .then(async (response) => {
+                    // If server returned JSON, use it; otherwise fallback to redirect
+                    if (response.headers.get('content-type')?.includes('application/json')) {
+                        const data = await response.json();
+                        if (data && data.success) {
+                            // Navigate back to the last page (or home as a fallback) once saved
+                            const previous = document.referrer;
+                            const fallback = '/home';
+                            const cameFromAddMemory = previous && previous.includes('/add-memory');
+
+                            // Prefer going back in history if it's not the add-memory page itself
+                            if (window.history.length > 1 && !cameFromAddMemory) {
+                                window.history.back();
+                            } else if (previous && !cameFromAddMemory) {
+                                window.location.href = previous;
+                            } else {
+                                window.location.href = fallback;
+                            }
+                        } else {
+                            showInlineStatus('Error saving memory. Please try again.', 'error');
+                        }
+                        return;
+                    }
+
+                    // Fallback: if server responded with a redirect, follow it
                     if (response.redirected) {
                         window.location.href = response.url;
                     }
                 })
                 .catch(error => {
                     console.error('Error uploading:', error);
+                    showInlineStatus('Upload failed. Please try again.', 'error');
                 });
         });
 
@@ -208,34 +238,46 @@ function updateMemoryPreview() {
         previewCircle.classList.remove('bg-red', 'bg-yellow', 'bg-green', 'bg-blue', 'bg-purple')
     }
 
-    previewImageContainer.innerHTML = '';
+  // Update image preview only if the first image changed; avoids flicker on every input change
+  if (allImages && allImages.length > 0) {
+    const file = allImages[0];
+    const currentKey = file ? `${file.name}-${file.size}` : null;
 
-    if (allImages && allImages.length > 0) {
-        const file = allImages[0];
-        if (file && file.type.startsWith('image/')) {
-            // Check if we're already processing this file to avoid duplicates
-            if (previewImageContainer.dataset.processingFile === file.name) {
-                return; // Already processing this file
-            }
-
-            previewImageContainer.dataset.processingFile = file.name;
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                // Clear container again before adding (in case of race conditions)
-                previewImageContainer.innerHTML = '';
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.alt = 'Preview';
-                previewImageContainer.appendChild(img);
-                // Clear the processing flag
-                delete previewImageContainer.dataset.processingFile;
-            };
-            reader.onerror = function () {
-                delete previewImageContainer.dataset.processingFile;
-            };
-            reader.readAsDataURL(file);
-        }
+    // If same image as last time, skip re-render to prevent flashing
+    if (currentKey && currentKey === lastPreviewImageKey) {
+      return;
     }
+
+    lastPreviewImageKey = currentKey;
+
+    if (file && file.type.startsWith('image/')) {
+      // Check if we're already processing this file to avoid duplicates
+      if (previewImageContainer.dataset.processingFile === file.name) {
+        return; // Already processing this file
+      }
+
+      previewImageContainer.dataset.processingFile = file.name;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        // Clear container again before adding (in case of race conditions)
+        previewImageContainer.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.alt = 'Preview';
+        previewImageContainer.appendChild(img);
+        // Clear the processing flag
+        delete previewImageContainer.dataset.processingFile;
+      };
+      reader.onerror = function () {
+        delete previewImageContainer.dataset.processingFile;
+      };
+      reader.readAsDataURL(file);
+    }
+  } else {
+    // No images; clear preview and reset tracking key
+    lastPreviewImageKey = null;
+    previewImageContainer.innerHTML = '';
+  }
 }
 
 
@@ -380,6 +422,25 @@ function updateSubmitButton() {
         submitButton.classList.remove('valid');
         submitButton.disabled = true;
     }
+}
+
+
+// Small inline status message helper
+function showInlineStatus(message, type) {
+    let statusEl = document.getElementById('add-memory-status');
+    if (!statusEl) {
+        statusEl = document.createElement('p');
+        statusEl.id = 'add-memory-status';
+        statusEl.style.marginTop = '8px';
+        statusEl.style.fontSize = '12px';
+        statusEl.style.letterSpacing = '0.5px';
+        const form = document.querySelector('.add-memory-form');
+        if (form) {
+            form.parentNode.insertBefore(statusEl, form.nextSibling);
+        }
+    }
+    statusEl.textContent = message;
+    statusEl.style.color = type === 'success' ? 'var(--color-green, #4caf50)' : 'var(--color-red, #d9534f)';
 }
 
 

@@ -11,9 +11,12 @@
 <body>
     <div class="main-body">
         <div class="form-container">
-            <%- include('components/header.ejs') %>
+            <%- include('components/header-login.ejs') %>
                 <a href="/login">/LOGIN</a>
                 <h1>SIGNUP</h1>
+                <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+                    <p class="error-message"><%= errorMessage %></p>
+                <% } %>
                 <form method="POST" action="/signup" enctype="multipart/form-data" class="login-form">
                     <div class="login-input-container">
                         <div class="login-input-item">

@@ -42,7 +42,7 @@
         <% } %>
         
         <% if (memory.title) { %>
-          <p class="memo-title"><%= memory.title %></p>
+          <h2 class="memo-title"><%= memory.title %></h2>
         <% } %>
         
         <% if (memory.description) { %>
@@ -52,16 +52,18 @@
         <% if (memory.island && memory.island.length > 0 && islands.length > 0) { %>
           <div class="memo-island-container">
             <% islands.forEach((island, index) => { %>
-              <p class="memo-island">#<%= island.name %></p>
+              <a href="/island" class="memo-island-link">
+                <p class="memo-island">#<%= island.name %></p>
+              </a>
               <% if (index < islands.length - 1) { %>
-                <span>/</span>
+                <span class="island-separator">/</span>
               <% } %>
             <% }); %>
           </div>
         <% } %>
       </div>
       
-      <button class="close-button" onclick="window.location.href='/all-memory'">×</button>
+      <button class="close-button" onclick="closeMemory()" title="Close">×</button>
     </div>
   </div>
 
@@ -100,6 +102,15 @@
       document.querySelectorAll('.indicator')[currentImageIndex].classList.add('active');
     }
 
+    // Close memory and go back to all-memory without recording in history
+    function closeMemory() {
+      // Replace current memory page with all-memory in history
+      // This removes the memory page from history
+      window.history.replaceState(null, '', '/all-memory');
+      window.location.href = '/all-memory';
+    }
+    window.closeMemory = closeMemory;
+
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowLeft') {
@@ -107,7 +118,12 @@
       } else if (e.key === 'ArrowRight') {
         changeImage(1);
       } else if (e.key === 'Escape') {
-        window.location.href = '/all-memory';
+        if (typeof closeMemory === 'function') {
+          closeMemory();
+        } else {
+          window.history.replaceState(null, '', '/all-memory');
+          window.location.href = '/all-memory';
+        }
       }
     });
   </script>

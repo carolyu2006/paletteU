@@ -222,6 +222,122 @@ function closeTrainMemory() {
 window.openMemory = openMemory;
 window.closeTrainMemory = closeTrainMemory;
 
+// Track main pages for smart navigation
+const MAIN_PAGES = ['/island', '/home', '/all-memory', '/all-islands', '/'];
+const PRIMARY_PAGES = ['/island', '/home', '/']; // Pages that are considered "home"
+const SECONDARY_PAGES = ['/all-memory', '/all-islands', '/settings', '/feedback']; // Pages that should go back to primary
+
+function trackMainPage() {
+  const currentPath = window.location.pathname;
+  if (MAIN_PAGES.includes(currentPath)) {
+    sessionStorage.setItem('lastMainPage', currentPath);
+  }
+  
+  // Track primary page separately
+  if (PRIMARY_PAGES.includes(currentPath)) {
+    sessionStorage.setItem('lastPrimaryPage', currentPath);
+  }
+}
+
+// Track main page on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', trackMainPage);
+} else {
+  trackMainPage();
+}
+
+// Function to navigate back to primary page (for secondary pages)
+function navigateToPrimaryPage() {
+  let targetPage = sessionStorage.getItem('lastPrimaryPage');
+  
+  // Default to /home if no primary page is stored
+  if (!targetPage || !PRIMARY_PAGES.includes(targetPage)) {
+    targetPage = '/home';
+  }
+  
+  window.location.href = targetPage;
+}
+
+window.navigateToPrimaryPage = navigateToPrimaryPage;
+
+function navigateToLastMainPage() {
+  let targetPage = null;
+  
+  // First, check if referrer is a main page (most recent)
+  const referrer = document.referrer;
+  if (referrer) {
+    try {
+      const referrerUrl = new URL(referrer);
+      const currentUrl = new URL(window.location.href);
+      
+      // Only check if referrer is from the same origin
+      if (referrerUrl.origin === currentUrl.origin) {
+        const referrerPath = referrerUrl.pathname;
+        
+        // Check if the referrer path is a main page
+        if (MAIN_PAGES.includes(referrerPath)) {
+          targetPage = referrerPath;
+        } else {
+          // Check if referrer path starts with a main page (for query params)
+          for (const mainPage of MAIN_PAGES) {
+            if (mainPage !== '/' && referrerPath.startsWith(mainPage + '/')) {
+              targetPage = mainPage;
+              break;
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // If URL parsing fails, fall through to sessionStorage
+    }
+  }
+  
+  // If referrer is not a main page, use sessionStorage
+  if (!targetPage) {
+    const lastMainPage = sessionStorage.getItem('lastMainPage');
+    if (lastMainPage && MAIN_PAGES.includes(lastMainPage)) {
+      targetPage = lastMainPage;
+    }
+  }
+  
+  // Default fallback
+  if (!targetPage) {
+    targetPage = '/all-memory';
+  }
+  
+  // Use replaceState to avoid adding memory page to history
+  window.history.replaceState(null, '', targetPage);
+  window.location.href = targetPage;
+}
+
+window.navigateToLastMainPage = navigateToLastMainPage;
+
+// Smart back navigation function for header back button
+function navigateBack() {
+  const currentPath = window.location.pathname;
+  
+  // If we're on a secondary page or a sub-route of a secondary page, go back to primary page
+  const isSecondaryPage = SECONDARY_PAGES.some(page => 
+    currentPath === page || currentPath.startsWith(page + '/')
+  );
+  
+  if (isSecondaryPage) {
+    navigateToPrimaryPage();
+    return;
+  }
+  
+  // If we're on a memory page, go back to all-memory (but don't record in history)
+  if (currentPath.startsWith('/memory-')) {
+    window.history.replaceState(null, '', '/all-memory');
+    window.location.href = '/all-memory';
+    return;
+  }
+  
+  // For other pages, use default browser back
+  window.history.back();
+}
+
+window.navigateBack = navigateBack;
 
 // Scroll detection
 

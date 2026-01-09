@@ -197,7 +197,17 @@ app.post('/add-island', requiresAuthentication, upload.none(), async (req, res) 
 
 
 app.get('/signup', (req, res) => {
-  res.render('signup.ejs', {})
+  let errorMessage = null;
+
+  if (req.query.empty) {
+    errorMessage = 'Please fill in all fields.';
+  } else if (req.query.password === 'incorrect') {
+    errorMessage = 'Password and confirm password do not match.';
+  } else if (req.query.username === 'exists') {
+    errorMessage = 'This username already exists. Please choose another one.';
+  }
+
+  res.render('signup.ejs', { errorMessage: errorMessage });
 })
 
 app.post('/signup', upload.single('profilePicture'), async (req, res) => {
@@ -247,6 +257,12 @@ app.post('/login', (req, res) => {
       if (bcrypt.compareSync(loginAttempt.password, encPass)) {
         let session = req.session
         session.loggedInUser = foundUser.username
+
+        // If user has not completed the color tutorial yet, send them there first
+        if (!foundUser.tutorialCompleted && !foundUser.emotionWords) {
+          return res.redirect('/tutorial');
+        }
+
         res.redirect('/')
       } else {
         res.redirect('/login?password=incorrect')
@@ -284,7 +300,14 @@ app.get('/add-memory', requiresAuthentication, async (req, res) => {
 })
 
 app.post('/add-memory', requiresAuthentication, upload.array('image-input'), (request, response) => {
+  // Detect AJAX/fetch intent to avoid full page refresh
+  const wantsJson = (request.headers['x-requested-with'] || '').toLowerCase() === 'xmlhttprequest'
+    || (request.headers.accept && request.headers.accept.includes('application/json'));
+
   if (!request.session.loggedInUser) {
+    if (wantsJson) {
+      return response.status(401).json({ success: false, error: 'not_authenticated' });
+    }
     return response.redirect('/login');
   }
 
@@ -320,8 +343,16 @@ app.post('/add-memory', requiresAuthentication, upload.array('image-input'), (re
   memoriesdb.insert(singleMemory, (err, newData) => {
     if (err) {
       console.error('Error saving memory:', err);
+      if (wantsJson) {
+        return response.status(500).json({ success: false, error: 'error_saving_memory' });
+      }
       return response.redirect('/add-memory?error=save');
     }
+
+    if (wantsJson) {
+      return response.json({ success: true, id: newData?._id });
+    }
+
     response.redirect("/home")
   })
 });
@@ -967,6 +998,102 @@ app.get('/settings', requiresAuthentication, async (req, res) => {
       wordsError: null,
       wordsSuccess: null
     });
+  }
+});
+
+// First-time tutorial: set what each color means
+app.get('/tutorial', requiresAuthentication, async (req, res) => {
+  const username = req.session.loggedInUser;
+
+  try {
+    const user = await userdb.findOneAsync({ username: username });
+
+    // If tutorial was already completed, go straight home
+    if (user && (user.tutorialCompleted || user.emotionWords)) {
+      return res.redirect('/home');
+    }
+
+    res.render('tutorial.ejs', {
+      user: user
+    });
+  } catch (err) {
+    console.error('Error loading tutorial:', err);
+    res.redirect('/home');
+  }
+});
+
+app.post('/tutorial', requiresAuthentication, upload.none(), async (req, res) => {
+  const username = req.session.loggedInUser;
+  const { wordRed, wordYellow, wordGreen, wordBlue, wordPurple, skip } = req.body;
+
+  try {
+    // If user chose to skip, just mark tutorial as completed and keep defaults
+    if (skip === 'true') {
+      await userdb.updateAsync(
+        { username: username },
+        {
+          $set: {
+            tutorialCompleted: true
+          }
+        }
+      );
+      return res.redirect('/home');
+    }
+
+    // Store the full words and their split versions (reuse splitWord logic from settings)
+    function splitWord(word) {
+      if (!word || word.length === 0) return { part1: '', part2: '' };
+      const upperWord = word.toUpperCase();
+      const length = word.length;
+
+      if (length <= 2) return { part1: upperWord, part2: '' };
+
+      if (length % 2 === 0) {
+        const half = length / 2;
+        return {
+          part1: upperWord.substring(0, half),
+          part2: upperWord.substring(half)
+        };
+      } else {
+        const half = Math.floor(length / 2);
+        return {
+          part1: upperWord.substring(0, half),
+          part2: upperWord.substring(half + 1)
+        };
+      }
+    }
+
+    const emotionWords = {
+      red: wordRed || 'ANGER',
+      yellow: wordYellow || 'JOY',
+      green: wordGreen || 'DISGUST',
+      blue: wordBlue || 'SADNESS',
+      purple: wordPurple || 'FEAR'
+    };
+
+    const emotionWordParts = {
+      red: splitWord(wordRed || 'ANGER'),
+      yellow: splitWord(wordYellow || 'JOY'),
+      green: splitWord(wordGreen || 'DISGUST'),
+      blue: splitWord(wordBlue || 'SADNESS'),
+      purple: splitWord(wordPurple || 'FEAR')
+    };
+
+    await userdb.updateAsync(
+      { username: username },
+      {
+        $set: {
+          emotionWords: emotionWords,
+          emotionWordParts: emotionWordParts,
+          tutorialCompleted: true
+        }
+      }
+    );
+
+    res.redirect('/home');
+  } catch (err) {
+    console.error('Error saving tutorial words:', err);
+    res.redirect('/home');
   }
 });
 

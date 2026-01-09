@@ -532,12 +532,12 @@ body.scrolling::-webkit-scrollbar-thumb {
     align-items: center;
     justify-content: center;
     z-index: 100;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(31, 31, 31, 0.3);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .add-button-fixed:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 6px 16px rgba(31, 31, 31, 0.4);
 }
 
 .add-button-fixed .add-icon {

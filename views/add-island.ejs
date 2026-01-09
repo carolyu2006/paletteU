@@ -157,9 +157,16 @@
                                                 <p class="memo-date">
                                                     <%= memory.date || '' %>
                                                 </p>
+                                                <% if (memory.title) { %>
                                                 <p class="memo-title">
-                                                    <%= memory.title || 'Untitled' %>
+                                                    <%= memory.title %>
                                                 </p>
+                                                <% } %>
+                                                <% if (memory.title) { %>
+                                                <p class="memo-title">
+                                                    <%= memory.title %>
+                                                </p>
+                                                <% } %>
                                                 <p class="memo-description">
                                                     <%= memory.description || '' %>
                                                 </p>
